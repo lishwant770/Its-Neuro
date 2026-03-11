@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NeuroMentor - AI Doubt Solver</title>
+
+<script>
+window.MathJax = {
+  tex: {
+    packages: ['base','ams','physics'],
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<style>
+/* UI untouched (exactly yours) */
+
+:root{
+  --console-bg:#06090f;
+  --console-panel:#0b111c;
+  --console-accent:#00ffd1;
+  --console-accent-2:#ff006e;
+  --console-accent-3:#8338ec;
+  --radius:14px;
+  --glow-cyan:rgba(0,255,209,0.8);
+  --glow-pink:rgba(255,0,110,0.8);
+  --glow-purple:rgba(131,56,236,0.8);
+  font-family:'Courier New',monospace;
+}
+
+body{
+  margin:0;
+  color:#eaf1ff;
+  overflow-x:hidden;
+  background:
+    radial-gradient(1200px at 50% 50%, rgba(131,56,236,.15), transparent 40%),
+    radial-gradient(800px at 20% 80%, rgba(255,0,110,.1), transparent 40%),
+    radial-gradient(800px at 80% 20%, rgba(0,255,209,.1), transparent 40%),
+    var(--console-bg);
+  position:relative;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,.03),
+      rgba(0,0,0,.03) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  animation:flicker 0.15s infinite;
+  z-index:1;
+}
+
+.container{
+  position:relative;
+  max-width:900px;
+  margin:48px auto;
+  padding:36px 40px;
+  border-radius:16px;
+  background:var(--console-panel);
+  border:1px solid rgba(0,255,209,.25);
+  box-shadow:
+    0 40px 120px rgba(0,0,0,.8),
+    0 0 60px rgba(0,255,209,.12);
+  clip-path:polygon(0 0,96% 0,100% 8%,100% 100%,4% 100%,0 92%);
+  z-index:2;
+}
+
+.container::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  clip-path:inherit;
+  background:linear-gradient(90deg,transparent,var(--console-accent),var(--console-accent-2),var(--console-accent-3),transparent);
+  filter:blur(18px);
+  opacity:.35;
+  animation:edge 6s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes edge{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+@keyframes flicker{
+  0%{opacity:0.95}
+  50%{opacity:1}
+  100%{opacity:0.95}
+}
+
+/* ---------- rain ---------- */
+
+.neon-lines{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+.neon-lines span{
+  position:absolute;
+  width:1px;height:100%;
+  background:linear-gradient(to bottom,transparent,var(--glow-cyan),transparent);
+  animation:fall 8s linear infinite;
+  filter:drop-shadow(0 0 15px var(--glow-cyan)) drop-shadow(0 0 30px rgba(0,255,209,.3));
+  opacity:0.6;
+}
+@keyframes fall{
+  0%{transform:translateY(-100%);opacity:0}
+  10%{opacity:0.8}
+  90%{opacity:0.8}
+  100%{transform:translateY(100%);opacity:0}
+}
+.neon-lines span:nth-child(1){left:5%;animation-duration:7s}
+.neon-lines span:nth-child(2){left:25%;animation-delay:1.5s;filter:drop-shadow(0 0 15px var(--glow-pink)) drop-shadow(0 0 30px rgba(255,0,110,.3))}
+.neon-lines span:nth-child(3){left:50%;animation-delay:2s}
+.neon-lines span:nth-child(4){left:75%;animation-delay:1s;animation-duration:9s;filter:drop-shadow(0 0 15px var(--glow-purple)) drop-shadow(0 0 30px rgba(131,56,236,.3))}
+.neon-lines span:nth-child(5){left:95%;animation-delay:0.5s}
+
+.hud{
+  position:absolute;
+  width:26px;
+  height:26px;
+  border:2px solid var(--console-accent);
+}
+
+.hud.tl{top:12px;left:12px;border-right:none;border-bottom:none;}
+.hud.tr{top:12px;right:12px;border-left:none;border-bottom:none;}
+.hud.bl{bottom:12px;left:12px;border-right:none;border-top:none;}
+.hud.br{bottom:12px;right:12px;border-left:none;border-top:none;}
+
+h2{
+  margin-top:0;
+  color:var(--console-accent);
+  letter-spacing:.15em;
+  font-size:1.1rem;
+  position:relative;
+  text-shadow:0 0 10px var(--glow-cyan),0 0 20px var(--glow-cyan);
+}
+
+h2::before,
+h2::after{
+  content:attr(data-text);
+  position:absolute;
+  left:0;top:0;
+  opacity:.8;
+  font-size:1.1rem;
+  letter-spacing:.15em;
+}
+
+h2::before{
+  color:var(--console-accent-2);
+  transform:translate(2px,0);
+  animation:gl1 3s infinite linear alternate;
+  text-shadow:0 0 10px var(--glow-pink),0 0 20px var(--glow-pink);
+}
+
+h2::after{
+  color:var(--console-accent-3);
+  transform:translate(-2px,0);
+  animation:gl2 3.5s infinite linear alternate;
+  text-shadow:0 0 10px var(--glow-purple),0 0 20px var(--glow-purple);
+}
+
+@keyframes gl1{
+  0%{clip-path:inset(20% 0 60% 0)}
+  50%{clip-path:inset(35% 0 30% 0)}
+  100%{clip-path:inset(60% 0 20% 0)}
+}
+
+@keyframes gl2{
+  0%{clip-path:inset(50% 0 20% 0)}
+  50%{clip-path:inset(25% 0 45% 0)}
+  100%{clip-path:inset(35% 0 40% 0)}
+}
+
+label{
+  display:block;
+  margin-top:18px;
+  color:#9fded5;
+  font-size:.8rem;
+  letter-spacing:.12em;
+}
+
+select,
+input[type="text"]{
+  width:100%;
+  background:#0f1626;
+  border:1px solid rgba(0,255,209,.3);
+  border-radius:10px;
+  color:white;
+  padding:10px 12px;
+  margin-top:6px;
+  transition:border-color 0.3s, box-shadow 0.3s;
+}
+
+select:focus,
+input:focus{
+  outline:none;
+  border-color:var(--console-accent);
+  box-shadow:0 0 12px rgba(0,255,209,.4);
+}
+
+button{
+  margin-top:22px;
+  width:100%;
+  padding:11px 18px;
+  border:none;
+  border-radius:10px;
+  font-weight:700;
+  letter-spacing:.1em;
+  background:var(--console-accent);
+  color:#00110f;
+  cursor:pointer;
+  transition:box-shadow 0.3s, background 0.3s;
+  box-shadow:0 0 15px rgba(0,255,209,.5);
+}
+
+button:hover{
+  background:var(--console-accent-2);
+  box-shadow:0 0 25px var(--glow-pink);
+}
+
+.output{
+  margin-top:28px;
+  background:#0f1626;
+  border-radius:12px;
+  padding:18px;
+  border-left:3px solid var(--console-accent);
+}
+
+.bold{
+  color:var(--console-accent);
+  font-weight:700;
+}
+
+.equation-block{
+  background:#070b14;
+  padding:12px;
+  margin:14px 0;
+  border-radius:10px;
+  border-left:2px solid var(--console-accent);
+}
+
+.typing-indicator span,
+.processing-bubble div{
+  width:8px;
+  height:8px;
+  background:var(--console-accent);
+  border-radius:50%;
+  display:inline-block;
+  animation:bounce 1.2s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(2),
+.processing-bubble div:nth-child(2){animation-delay:.2s;}
+.typing-indicator span:nth-child(3),
+.processing-bubble div:nth-child(3){animation-delay:.4s;}
+
+@keyframes bounce{
+  0%,80%,100%{transform:scale(.7);opacity:.5;}
+  40%{transform:scale(1);opacity:1;}
+}
+
+.file-upload{
+  text-align:center;
+  margin-top:10px;
+}
+
+.file-upload input{display:none;}
+
+.custom-btn{
+  display:inline-block;
+  padding:10px 22px;
+  color:var(--console-accent);
+  border:2px solid var(--console-accent);
+  border-radius:10px;
+  background:transparent;
+  cursor:pointer;
+  font-weight:600;
+  transition:background 0.3s, color 0.3s, box-shadow 0.3s;
+  box-shadow:0 0 10px rgba(0,255,209,.3);
+}
+
+.custom-btn:hover{
+  background:var(--console-accent);
+  color:#00110f;
+  box-shadow:0 0 20px var(--glow-cyan);
+}
+
+.file-name{
+  margin-top:10px;
+  font-size:.8rem;
+  opacity:.8;
+}
+
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-track{background:#05060c;}
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(var(--console-accent),var(--console-accent-2));
+  border-radius:10px;
+}
+.output{
+  height:auto;
+  min-height: unset;
+}
+.equation-block svg * {
+  width:100%;
+  height:auto;
+  display: block;
+  stroke: #eaf1ff !important;
+  color: initial;
+}
+.equation-block{
+  padding: 8px 10px;
+  margin: 12px 0;
+  display: inline-block;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 420px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="neon-lines">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="container">
+
+  <div class="hud tl"></div>
+  <div class="hud tr"></div>
+  <div class="hud bl"></div>
+  <div class="hud br"></div>
+
+  <form id="solverForm">
+
+    <h2 data-text="AI DOUBT SOLVER CONSOLE">AI DOUBT SOLVER CONSOLE</h2>
+
+    <label>Select Subject</label>
+    <select id="subject">
+      <option value="">Choose...</option>
+      <option>Mathematics</option>
+      <option>Physics</option>
+      <option>Chemistry</option>
+      <option>Biology</option>
+      <option>History</option>
+      <option>Geography</option>
+      <option>Computer Applications</option>
+    </select>
+
+    <label>Chapter</label>
+    <input type="text" id="chapter" placeholder="Enter Chapter Name">
+
+    <label>Question Title</label>
+    <input type="text" id="qname" placeholder="Give a short title">
+
+    <label>Type your Question</label>
+    <input type="text" id="textQuestion" placeholder="Enter your full question...">
+
+    <button type="button" id="askBtn">Ask AI</button>
+
+    <label>Or Upload Question Image</label>
+
+    <div class="file-upload">
+      <label for="imageInput" class="custom-btn">Choose File</label>
+      <input type="file" id="imageInput" accept="image/*">
+      <div class="file-name" id="fileName">No file selected</div>
+    </div>
+
+    <button type="button" id="solveBtn">Upload & Solve</button>
+
+  </form>
+
+  <div id="output" class="output"></div>
+
+</div>
+
+<script>
+const backendURL = "http://127.0.0.1:5000";
+
+/* ---- real element bindings (NO globals) ---- */
+
+const form = document.getElementById("solverForm");
+const output = document.getElementById("output");
+
+const subjectEl = document.getElementById("subject");
+const chapterEl = document.getElementById("chapter");
+const qnameEl = document.getElementById("qname");
+const textQuestionEl = document.getElementById("textQuestion");
+
+const askBtn = document.getElementById("askBtn");
+const solveBtn = document.getElementById("solveBtn");
+
+const imageInput = document.getElementById("imageInput");
+const fileName = document.getElementById("fileName");
+
+/* ---- absolutely kill submit / reload ---- */
+
+form.addEventListener("submit", e => e.preventDefault());
+form.addEventListener("keydown", e => {
+  if (e.key === "Enter") e.preventDefault();
+});
+
+/* ---- file label ---- */
+
+imageInput.addEventListener("change", () => {
+  fileName.textContent = imageInput.files.length
+    ? imageInput.files[0].name
+    : "No file selected";
+});
+
+/* ---- buttons ---- */
+
+askBtn.addEventListener("click", askAI);
+solveBtn.addEventListener("click", solveImage);
+
+/* ---- helpers ---- */
+
+function collectMeta(){
+  return {
+    subject: subjectEl.value,
+    chapter: chapterEl.value,
+    questionName: qnameEl.value
+  };
+}
+
+function formatBold(text){
+  return text.replace(/\*\*(.*?)\*\*/g,'<span class="bold">$1</span>');
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[c]));
+}
+
+async function formatAnswerWithTikz(rawText){
+
+  const tikzRegex =
+    /\\begin\s*\{\s*tikzpicture\s*\}[\s\S]*?\\end\s*\{\s*tikzpicture\s*\}/gi;
+
+  let html = rawText || "";
+  const blocks = [...html.matchAll(tikzRegex)];
+
+  for(const block of blocks){
+
+    const tikz = block[0];
+    let replacement;
+
+    try{
+      const r = await fetch(`${backendURL}/render-tikz`,{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({ tikz })
+      });
+
+      const d = await r.json();
+
+      if(d.svg)
+        replacement = `<div class="equation-block">${d.svg}</div>`;
+      else
+        replacement = `<pre class="equation-block">${escapeHtml(tikz)}</pre>`;
+
+    }catch(err){
+      replacement = `<pre class="equation-block">${escapeHtml(tikz)}</pre>`;
+    }
+
+    html = html.replace(tikz, replacement);
+  }
+
+  html = html.replace(/\$\$([\s\S]*?)\$\$/g,
+    (_,eq)=>`<div class="equation-block">$$${eq}$$</div>`);
+
+  return formatBold(html);
+}
+
+function showLoading(type){
+  return type==="typing"
+    ? `<div class="typing-indicator"><span></span><span></span><span></span></div>`
+    : `<div class="processing-bubble"><div></div><div></div><div></div></div>`;
+}
+
+/* ---- main actions ---- */
+
+async function askAI(){
+
+  const question = textQuestionEl.value.trim();
+  if(!question){ alert("Please type a question!"); return; }
+
+  output.innerHTML = showLoading("typing");
+
+  try{
+
+    const res = await fetch(`${backendURL}/ask`,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ ...collectMeta(), question })
+    });
+
+    const data = await res.json();
+    const html = await formatAnswerWithTikz(data.answer || "");
+
+    output.innerHTML = `<h4>AI Answer</h4>${html}`;
+
+    if(window.MathJax) await MathJax.typesetPromise();
+
+  }catch(e){
+    output.innerHTML = `<b>Request failed</b>`;
+    console.error(e);
+  }
+}
+
+async function solveImage(){
+
+  if(!imageInput.files[0]){
+    alert("Upload an image");
+    return;
+  }
+
+  output.innerHTML = showLoading("processing");
+
+  const fd = new FormData();
+  fd.append("questionImage", imageInput.files[0]);
+
+  const meta = collectMeta();
+  for(const k in meta) fd.append(k, meta[k]);
+
+  try{
+
+    const res = await fetch(`${backendURL}/solve`,{
+      method:"POST",
+      body:fd
+    });
+
+    const data = await res.json();
+    const html = await formatAnswerWithTikz(data.answer || "");
+
+    output.innerHTML = `
+      <h4>OCR Extracted Text</h4>
+      <p>${escapeHtml(data.ocrText || "")}</p>
+
+      <h4>Diagram Caption</h4>
+      <p>${escapeHtml(data.caption || "")}</p>
+
+      <h4>AI Answer</h4>
+      ${html}
+    `;
+
+    if(window.MathJax) await MathJax.typesetPromise();
+
+  }catch(e){
+    output.innerHTML = `<b>Request failed</b>`;
+    console.error(e);
+  }
+}
+</script>
+
+</body>
+</html>

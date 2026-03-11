@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>NeuroMentor Analysis</title>
+
+<style>
+
+body{
+background:#05070c;
+color:white;
+font-family:monospace;
+padding:40px;
+text-align:center;
+}
+
+.card{
+background:#0b111c;
+padding:30px;
+margin:20px auto;
+max-width:900px;
+border:1px solid #00ffd1;
+box-shadow:0 0 20px rgba(0,255,209,.2);
+}
+
+h1{
+color:#00ffd1;
+}
+
+.good{
+color:#00ff8c;
+}
+
+.bad{
+color:#ff3b3b;
+}
+
+ul{
+text-align:left;
+max-width:600px;
+margin:auto;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>NeuroMentor AI Analysis</h1>
+
+<div class="card">
+
+<h2 id="score"></h2>
+<h3 id="accuracy"></h3>
+
+</div>
+
+<div class="card">
+
+<h2>Strong Areas</h2>
+<ul id="strong"></ul>
+
+</div>
+
+<div class="card">
+
+<h2>Weak Areas</h2>
+<ul id="weak"></ul>
+
+</div>
+
+<div class="card">
+
+<h2>AI Feedback</h2>
+<p id="feedback"></p>
+
+</div>
+
+<script>
+
+const result = JSON.parse(sessionStorage.getItem("examResult"))
+
+document.getElementById("score").innerText =
+"Score: "+result.score+" / "+result.total
+
+document.getElementById("accuracy").innerText =
+"Accuracy: "+result.accuracy+"%"
+
+const strongList = document.getElementById("strong")
+const weakList = document.getElementById("weak")
+
+let strong=[]
+let weak=[]
+
+for(let chapter in result.chapterStats){
+
+const data = result.chapterStats[chapter]
+
+if(data.wrong === 0){
+strong.push(chapter)
+}else{
+weak.push(chapter)
+}
+
+}
+
+strong.forEach(c=>{
+const li=document.createElement("li")
+li.className="good"
+li.innerText=c
+strongList.appendChild(li)
+})
+
+weak.forEach(c=>{
+const li=document.createElement("li")
+li.className="bad"
+li.innerText=c
+weakList.appendChild(li)
+})
+
+/* simple AI feedback */
+
+let feedback=""
+
+if(result.accuracy > 80){
+
+feedback="Excellent performance. Your conceptual understanding is strong."
+
+}else if(result.accuracy > 60){
+
+feedback="Good attempt, but some conceptual gaps exist. Focus on weak chapters."
+
+}else{
+
+feedback="You need stronger fundamentals. Revise core concepts before attempting advanced problems."
+
+}
+
+document.getElementById("feedback").innerText = feedback
+
+</script>
+
+</body>
+</html> 

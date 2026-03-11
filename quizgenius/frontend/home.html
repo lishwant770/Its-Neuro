@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NeuroMentor – Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ---------------- THEMES ---------------- */
+
+:root{
+  --bg:#06090f;
+  --panel:#0b111c;
+  --lime:#00ffd1;
+  --amber:#ff006e;
+  --purple:#8338ec;
+  --txt:#eaf1ff;
+  --side:#070b14;
+  --glow-cyan:rgba(0,255,209,0.8);
+  --glow-pink:rgba(255,0,110,0.8);
+  --glow-purple:rgba(131,56,236,0.8);
+}
+
+body.theme-amber{
+  --lime:#ffb300;
+  --amber:#00ffd1;
+}
+
+body.theme-blue{
+  --lime:#4fd3ff;
+  --amber:#5b7cff;
+}
+
+body.theme-purple{
+  --lime:#b98cff;
+  --amber:#ff77e9;
+}
+
+/* ---------------- BASE ---------------- */
+
+*{box-sizing:border-box;font-family:'Courier New',monospace}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px at 50% 50%, rgba(131,56,236,.15), transparent 40%),
+    radial-gradient(800px at 20% 80%, rgba(255,0,110,.1), transparent 40%),
+    radial-gradient(800px at 80% 20%, rgba(0,255,209,.1), transparent 40%),
+    var(--bg);
+  color:var(--txt);
+  overflow-x:hidden;
+  position:relative;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,.03),
+      rgba(0,0,0,.03) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  pointer-events:none;
+  z-index:1;
+  animation:flicker 0.15s infinite;
+}
+
+/* ---------- rain ---------- */
+
+.neon-lines{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+.neon-lines span{
+  position:absolute;
+  width:1px;height:100%;
+  background:linear-gradient(to bottom,transparent,var(--glow-cyan),transparent);
+  animation:fall 8s linear infinite;
+  filter:drop-shadow(0 0 15px var(--glow-cyan)) drop-shadow(0 0 30px rgba(0,255,209,.3));
+  opacity:0.6;
+}
+@keyframes fall{
+  0%{transform:translateY(-100%);opacity:0}
+  10%{opacity:0.8}
+  90%{opacity:0.8}
+  100%{transform:translateY(100%);opacity:0}
+}
+.neon-lines span:nth-child(1){left:5%;animation-duration:7s}
+.neon-lines span:nth-child(2){left:25%;animation-delay:1.5s;filter:drop-shadow(0 0 15px var(--glow-pink)) drop-shadow(0 0 30px rgba(255,0,110,.3))}
+.neon-lines span:nth-child(3){left:50%;animation-delay:2s}
+.neon-lines span:nth-child(4){left:75%;animation-delay:1s;animation-duration:9s;filter:drop-shadow(0 0 15px var(--glow-purple)) drop-shadow(0 0 30px rgba(131,56,236,.3))}
+.neon-lines span:nth-child(5){left:95%;animation-delay:0.5s}
+
+/* ---------------- NAV ---------------- */
+
+nav{
+  padding:16px 5%;
+  background:#06090fcc;
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(0,255,209,.25);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:relative;
+  z-index:10;
+}
+
+.brand{
+  font-weight:700;
+  letter-spacing:.2em;
+  color:var(--lime);
+  font-size:.9rem;
+  position:relative;
+  text-shadow:0 0 10px var(--glow-cyan),0 0 20px var(--glow-cyan);
+}
+
+.brand::before,
+.brand::after{
+  content:attr(data-text);
+  position:absolute;
+  left:0;top:0;
+  opacity:.8;
+  font-weight:700;
+}
+
+.brand::before{
+  color:var(--amber);
+  transform:translate(2px,0);
+  animation:gl1 3s infinite linear alternate;
+  text-shadow:0 0 10px var(--glow-pink),0 0 20px var(--glow-pink);
+}
+
+.brand::after{
+  color:var(--purple);
+  transform:translate(-2px,0);
+  animation:gl2 3.5s infinite linear alternate;
+  text-shadow:0 0 10px var(--glow-purple),0 0 20px var(--glow-purple);
+}
+
+@keyframes gl1{
+  0%{clip-path:inset(20% 0 60% 0)}
+  50%{clip-path:inset(35% 0 30% 0)}
+  100%{clip-path:inset(60% 0 20% 0)}
+}
+
+@keyframes gl2{
+  0%{clip-path:inset(50% 0 20% 0)}
+  50%{clip-path:inset(25% 0 45% 0)}
+  100%{clip-path:inset(35% 0 40% 0)}
+}
+
+/* ---------------- LAYOUT ---------------- */
+
+.layout{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  min-height:calc(100vh - 60px);
+}
+
+/* ---------------- SIDEBAR ---------------- */
+
+.sidebar{
+  padding:28px 20px;
+  background:var(--side);
+  border-right:1px solid rgba(0,255,209,.2);
+}
+
+.profile-mini{
+  margin-bottom:26px;
+  padding:18px;
+  background:#0f1626;
+  border-left:3px solid var(--lime);
+  text-align:center;
+}
+
+#avatarMini{
+  width:72px;height:72px;border-radius:50%;
+  border:2px solid var(--lime);
+  object-fit:cover;
+  cursor:pointer;
+}
+
+.menu a{
+  display:block;
+  padding:12px 14px;
+  margin-bottom:10px;
+  color:#cfefff;
+  text-decoration:none;
+  border-left:2px solid transparent;
+  cursor:pointer;
+}
+
+.menu a.active,
+.menu a:hover{
+  border-left-color:var(--lime);
+  background:#0f1626;
+}
+
+/* ---------------- MAIN ---------------- */
+
+main{padding:32px 34px; position:relative; z-index:2;}
+
+.panel{display:none}
+.panel.active{display:block}
+
+/* ---------------- CONSOLE CARD ---------------- */
+
+.console{
+  position:relative;
+  padding:32px 34px;
+  background:var(--panel);
+  clip-path:polygon(0 0,96% 0,100% 10%,100% 100%,4% 100%,0 90%);
+  border:1px solid rgba(0,255,209,.25);
+  box-shadow:0 40px 120px rgba(0,0,0,.8),
+             0 0 60px rgba(0,255,209,.12);
+  margin-bottom:26px;
+  overflow:hidden;
+}
+
+.console::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  clip-path:inherit;
+  background:linear-gradient(90deg,transparent,var(--lime),var(--amber),var(--purple),transparent);
+  filter:blur(18px);
+  opacity:.35;
+  animation:edge 6s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes flicker{
+  0%{opacity:0.95}
+  50%{opacity:1}
+  100%{opacity:0.95}
+}
+
+.scan{
+  position:absolute;
+  left:-40%;
+  top:0;
+  width:40%;
+  height:100%;
+  background:linear-gradient(90deg,transparent,rgba(0,255,209,.12),transparent);
+  animation:scan 6s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes scan{from{left:-40%}to{left:120%}}
+
+@keyframes edge{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+/* ---------------- STATS ---------------- */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:18px;
+}
+
+.stat{
+  background:#0f1626;
+  padding:18px;
+  border-left:2px solid var(--lime);
+  transition:box-shadow 0.3s;
+}
+
+.stat:hover{
+  box-shadow:0 0 20px rgba(0,255,209,.2);
+}
+
+.stat span{
+  font-size:.75rem;color:#9fded5;letter-spacing:.1em;
+}
+
+.stat strong{
+  display:block;margin-top:6px;font-size:1.4rem;color:var(--lime);
+}
+
+/* ---------------- TABLE ---------------- */
+
+table{width:100%;border-collapse:collapse}
+th,td{
+  padding:10px;font-size:.85rem;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+th{color:var(--amber)}
+
+/* ---------------- FORM ---------------- */
+
+input,textarea,select{
+  width:100%;
+  background:#0f1626;
+  border:1px solid rgba(0,255,209,.3);
+  color:white;
+  padding:8px;
+}
+
+label{font-size:.75rem;color:#9fded5;letter-spacing:.1em}
+
+.btn{
+  padding:10px 18px;
+  border:none;
+  background:var(--lime);
+  color:#00110f;
+  font-weight:700;
+  cursor:pointer;
+  transition:box-shadow 0.3s, background 0.3s;
+  box-shadow:0 0 15px rgba(0,255,209,.5);
+}
+.btn:hover{
+  background:var(--amber);
+  box-shadow:0 0 25px var(--glow-pink);
+}
+
+.profile-grid{
+  display:grid;
+  grid-template-columns:180px 1fr;
+  gap:26px;
+}
+
+#avatarBig{
+  width:140px;height:140px;border-radius:50%;
+  border:2px solid var(--lime);
+  object-fit:cover;
+  cursor:pointer;
+}
+
+/* mobile */
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .profile-grid{grid-template-columns:1fr}
+}
+
+/* ---------- feature grid ---------- */
+
+.feature-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+
+.feature-card{
+  background:var(--panel);
+  padding:20px;
+  border-left:3px solid var(--lime);
+  box-shadow:0 0 20px rgba(0,255,209,.1);
+  transition:box-shadow 0.3s;
+}
+
+.feature-card:hover{
+  box-shadow:0 0 30px var(--glow-cyan);
+}
+
+.feature-card h3{
+  color:var(--lime);
+  margin-bottom:10px;
+  text-shadow:0 0 10px var(--glow-cyan);
+}
+
+.feature-card p{
+  color:#b9c7ef;
+  line-height:1.6;
+}
+
+/* ---------- about ---------- */
+
+.about-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:30px;
+  align-items:center;
+}
+
+.about-text p{
+  color:#b9c7ef;
+  line-height:1.7;
+  margin-bottom:15px;
+}
+
+.about-visual{
+  background:linear-gradient(135deg,rgba(5,5,5,.8),rgba(20,10,30,.6));
+  border:2px solid;
+  border-image:linear-gradient(135deg,var(--glow-cyan),var(--glow-purple)) 1;
+  padding:15px;
+  box-shadow:0 0 30px rgba(0,255,209,.2),inset 0 0 30px rgba(131,56,236,.1);
+}
+
+.about-visual img{
+  width:100%;
+  display:block;
+}
+
+/* ---------- modules ---------- */
+
+.modules-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
+
+.module-card{
+  background:#0f1626;
+  padding:18px;
+  border-left:2px solid var(--lime);
+  text-align:center;
+  transition:box-shadow 0.3s;
+}
+
+.module-card:hover{
+  box-shadow:0 0 20px rgba(0,255,209,.2);
+}
+
+.module-card h3{
+  color:var(--lime);
+  margin-bottom:8px;
+}
+
+.module-card p{
+  color:#9fded5;
+  font-size:.85rem;
+}
+
+/* ---------- contact ---------- */
+
+.contact-form input,
+.contact-form textarea{
+  width:100%;
+  background:#0f1626;
+  border:1px solid rgba(0,255,209,.3);
+  color:white;
+  padding:10px;
+  margin-bottom:10px;
+}
+
+.contact-form label{
+  color:#9fded5;
+  font-size:.75rem;
+  letter-spacing:.1em;
+}
+
+</style>
+</head>
+<body class="theme-default">
+
+<div class="neon-lines">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<nav>
+  <div class="brand" data-text="NEUROMENTOR">NEUROMENTOR</div>
+  <span style="color:#9debe0;font-size:.85rem">Student console</span>
+</nav>
+
+<div class="layout">
+
+<aside class="sidebar">
+
+    <div class="profile-mini">
+      <label for="avatarInput">
+        <img id="avatarMini" alt="Avatar">
+      </label>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none">
+      <div id="miniName"></div>
+    </div>
+
+  <div class="menu">
+    <a class="active" onclick="openPanel('overview',this)">Overview</a>
+    <a onclick="openPanel('tests',this)">My Tests</a>
+    <a onclick="openPanel('analytics',this)">Analytics</a>
+    <a onclick="openPanel('solver',this)">Doubt Solver</a>
+    <a onclick="openPanel('profile',this)">Profile</a>
+    <a onclick="openPanel('settings',this)">Settings</a>
+      </div>
+
+</aside>
+
+<main>
+
+<!-- OVERVIEW -->
+<section id="overview" class="panel active">
+
+  <div class="console">
+    <div class="scan"></div>
+    <h1 style="font-size:2.5rem; color:var(--lime); text-shadow:0 0 20px var(--glow-cyan); margin-bottom:10px;">Welcome to NeuroMentor</h1>
+    <p style="color:#b9c7ef; font-size:1.1rem; line-height:1.6; max-width:600px;">Experience the future of education with our AI-powered learning console. Adaptive quizzes, instant doubt solving, and deep analytics await.</p>
+    <br>
+    <button class="btn" onclick="startTest()">Start Learning</button>
+  </div>
+<!-- FEATURES -->
+<section id="features" class="panel">
+  <div class="console"><div class="scan"></div><h2>Platform Features</h2></div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h3>Adaptive Quizzes</h3>
+      <p>Personalized quizzes that adjust to your learning pace and style.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Instant Doubt Solving</h3>
+      <p>AI-powered solver for academic questions, including LaTeX and diagrams.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Deep Analytics</h3>
+      <p>Track your progress and performance with detailed analytics.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Profile Management</h3>
+      <p>Update your profile and preferences for a tailored experience.</p>
+    </div>
+  </div>
+</section>
+
+  <div class="stats">
+    <div class="stat"><span>TESTS</span><strong id="s_tests">0</strong></div>
+    <div class="stat"><span>AVG SCORE</span><strong id="s_avg">0%</strong></div>
+    <div class="stat"><span>BEST</span><strong id="s_best">0%</strong></div>
+  </div>
+
+</section>
+
+<!-- TESTS -->
+<section id="tests" class="panel">
+  <div class="console"><div class="scan"></div><h2>Attempt history</h2></div>
+  <table>
+    <thead><tr><th>Subject</th><th>Score</th><th>Time</th></tr></thead>
+    <tbody id="testTable"></tbody>
+  </table>
+</section>
+
+<!-- ANALYTICS -->
+<section id="analytics" class="panel">
+  <div class="console"><div class="scan"></div><h2>Performance analytics</h2></div>
+  <p>Total attempts: <b id="a_total"></b></p>
+  <p>Average score: <b id="a_avg"></b></p>
+  <p>Highest score: <b id="a_best"></b></p>
+  <p>Lowest score: <b id="a_low"></b></p>
+</section>
+
+<!-- DOUBT SOLVER -->
+<section id="solver" class="panel">
+
+  <div class="console">
+    <div class="scan"></div>
+    <h2>AI Doubt Solver</h2>
+    <p style="color:#9fded5">Solve academic questions with LaTeX & diagrams.</p>
+  </div>
+
+  <iframe
+    src="doubt.html"
+    style="
+      width:100%;
+      height:85vh;
+      border:none;
+      border-radius:14px;
+      background:#06090f;
+      box-shadow:0 0 40px rgba(0,255,209,.15);
+    ">
+  </iframe>
+
+</section>
+
+<!-- PROFILE -->
+<section id="profile" class="panel">
+
+  <div class="console">
+    <div class="scan"></div>
+    <h2>Student profile</h2>
+  </div>
+
+  <div class="profile-grid">
+
+    <div>
+      <label for="avatarInput">
+        <img id="avatarBig" alt="Avatar">
+      </label>
+    </div>
+
+    <div>
+      <label>Full name</label>
+      <input id="p_name" type="text"><br><br>
+
+      <label>Date of birth</label>
+      <input type="date" id="p_dob"><br><br>
+
+      <label>Class</label>
+      <select id="p_class">
+        <option value="8">8</option><option value="9">9</option><option value="10">10</option>
+      </select><br><br>
+
+      <label>School</label>
+      <input id="p_school" type="text"><br><br>
+
+      <label>Address</label>
+      <textarea id="p_address" rows="3"></textarea><br><br>
+
+      <button class="btn" onclick="saveProfile()">Save profile</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="panel">
+
+  <div class="console">
+    <div class="scan"></div>
+    <h2>System settings</h2>
+  </div>
+
+  <label>Theme</label><br><br>
+  <select id="themeSelect" onchange="changeTheme(this.value)">
+    <option value="theme-default">Console dark</option>
+    <option value="theme-amber">Amber console</option>
+    <option value="theme-blue">Blue console</option>
+    <option value="theme-purple">Purple console</option>
+  </select>
+
+</section>
+
+</main>
+</div>
+
+<script>
+
+/* ---------------- PROFILE DATA ---------------- */
+
+let profile = JSON.parse(localStorage.getItem("nm_user_profile")) || {
+  name:"Student",
+  dob:"",
+  class:"9",
+  school:"",
+  address:"",
+  avatar:""
+};
+
+const avatarMini = document.getElementById("avatarMini");
+const avatarBig  = document.getElementById("avatarBig");
+const avatarInput= document.getElementById("avatarInput");
+const miniName   = document.getElementById("miniName");
+const p_name     = document.getElementById("p_name");
+const p_dob      = document.getElementById("p_dob");
+const p_class    = document.getElementById("p_class");
+const p_school   = document.getElementById("p_school");
+const p_address  = document.getElementById("p_address");
+
+function defaultAvatar(){
+  return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2306090f'/><text x='50' y='58' font-size='42' fill='%2300ffd1' text-anchor='middle'>👤</text></svg>";
+}
+
+function loadProfile(){
+  miniName.textContent = profile.name;
+  avatarMini.src = profile.avatar || defaultAvatar();
+  avatarBig.src  = profile.avatar || defaultAvatar();
+
+  p_name.value = profile.name;
+  p_dob.value  = profile.dob;
+  p_class.value= profile.class;
+  p_school.value=profile.school;
+  p_address.value=profile.address;
+}
+
+avatarInput.addEventListener("change",()=>{
+  const f=avatarInput.files[0];
+  if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    profile.avatar=r.result;
+    localStorage.setItem("nm_user_profile",JSON.stringify(profile));
+    loadProfile();
+  };
+  r.readAsDataURL(f);
+});
+
+function saveProfile(){
+  profile.name = p_name.value || "Student";
+  profile.dob = p_dob.value;
+  profile.class = p_class.value;
+  profile.school = p_school.value;
+  profile.address = p_address.value;
+  localStorage.setItem("nm_user_profile",JSON.stringify(profile));
+  loadProfile();
+}
+
+/* ---------------- NAV ---------------- */
+
+function openPanel(id,el){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".menu a").forEach(a=>a.classList.remove("active"));
+  el.classList.add("active");
+}
+
+/* ---------------- THEME ---------------- */
+
+function changeTheme(t){
+  document.body.className = t;
+  localStorage.setItem("nm_theme",t);
+}
+
+const themeSelect = document.getElementById("themeSelect");
+const savedTheme = localStorage.getItem("nm_theme");
+if(savedTheme){
+  document.body.className = savedTheme;
+  if(themeSelect) themeSelect.value = savedTheme;
+}
+
+/* ---------------- TEST DATA (from select.html) ---------------- */
+
+let tests = JSON.parse(localStorage.getItem("nm_console_tests")) || [];
+const s_tests = document.getElementById("s_tests");
+const s_avg   = document.getElementById("s_avg");
+const s_best  = document.getElementById("s_best");
+const testTable = document.getElementById("testTable");
+const a_total = document.getElementById("a_total");
+const a_avg   = document.getElementById("a_avg");
+const a_best  = document.getElementById("a_best");
+const a_low   = document.getElementById("a_low");
+
+function startTest(){
+  window.location.href="select.html";
+}
+
+function renderStats(){
+
+  if(!tests.length){
+    s_tests.textContent=0;
+    s_avg.textContent="0%";
+    s_best.textContent="0%";
+    return;
+  }
+
+  const scores = tests.map(t=>t.score);
+
+  s_tests.textContent = tests.length;
+  s_avg.textContent =
+    Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)+"%";
+  s_best.textContent = Math.max(...scores)+"%";
+}
+
+function renderTable(){
+  testTable.innerHTML="";
+  tests.forEach(t=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${t.subject}</td><td>${t.score}%</td><td>${t.time}</td>`;
+    testTable.appendChild(tr);
+  });
+}
+
+function renderAnalytics(){
+
+  if(!tests.length){
+    a_total.textContent=0;
+    a_avg.textContent="0%";
+    a_best.textContent="0%";
+    a_low.textContent="0%";
+    return;
+  }
+
+  const scores=tests.map(t=>t.score);
+
+  a_total.textContent=tests.length;
+  a_avg.textContent=Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)+"%";
+  a_best.textContent=Math.max(...scores)+"%";
+  a_low.textContent=Math.min(...scores)+"%";
+}
+
+/* init */
+
+loadProfile();
+renderStats();
+renderTable();
+renderAnalytics();
+
+</script>
+</body>
+</html>

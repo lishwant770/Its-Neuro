@@ -1,0 +1,248 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - NeuroMentor</title>
+<link rel="icon" href="logo.png" type="image/png">
+<style>
+  /* -------------------- Base & Reset -------------------- */
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', monospace; }
+  body, html { 
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background:
+      radial-gradient(1200px at 50% 50%, rgba(131,56,236,0.18), transparent 40%),
+      radial-gradient(800px at 20% 80%, rgba(255,0,110,0.12), transparent 40%),
+      radial-gradient(800px at 80% 20%, rgba(0,255,209,0.10), transparent 40%),
+      #0a0a0a;
+    color: #e0e0e0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+      linear-gradient(rgba(131,56,236,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,0,110,0.04) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events:none;
+    z-index:0;
+    opacity:0.25;
+  }
+
+  @keyframes flicker{
+    0%{opacity:0.95}
+    50%{opacity:1}
+    100%{opacity:0.95}
+  }
+
+  /* ---------- particles ---------- */
+
+  .neon-particles{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+  }
+  .neon-particles span{
+    position:absolute;
+    width:4px;height:4px;
+    background:#00ffd1;
+    border-radius:50%;
+    box-shadow:0 0 10px #00ffd1, 0 0 20px rgba(0,255,209,0.5);
+    animation:particleFloat 10s linear infinite;
+  }
+  @keyframes particleFloat{
+    0%{transform:translateY(100vh) rotate(0deg); opacity:0}
+    10%{opacity:1}
+    90%{opacity:1}
+    100%{transform:translateY(-10vh) rotate(360deg); opacity:0}
+  }
+  .neon-particles span:nth-child(1){left:10%;animation-duration:8s;animation-delay:0s;background:#ff006e;box-shadow:0 0 10px #ff006e, 0 0 20px rgba(255,0,110,0.5)}
+  .neon-particles span:nth-child(2){left:30%;animation-duration:12s;animation-delay:2s;background:#8338ec;box-shadow:0 0 10px #8338ec, 0 0 20px rgba(131,56,236,0.5)}
+  .neon-particles span:nth-child(3){left:50%;animation-duration:9s;animation-delay:1s}
+  .neon-particles span:nth-child(4){left:70%;animation-duration:11s;animation-delay:3s;background:#ff006e;box-shadow:0 0 10px #ff006e, 0 0 20px rgba(255,0,110,0.5)}
+  .neon-particles span:nth-child(5){left:90%;animation-duration:10s;animation-delay:0.5s;background:#8338ec;box-shadow:0 0 10px #8338ec, 0 0 20px rgba(131,56,236,0.5)}
+
+  /* -------------------- Container -------------------- */
+  .login-container {
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, #181824 80%, #23233a 100%);
+    border: 2px solid #00ffd1;
+    padding: 60px 50px;
+    max-width: 450px;
+    width: 90%;
+    border-radius: 18px;
+    clip-path: polygon(0 0, 96% 0, 100% 4%, 100% 100%, 4% 100%, 0 96%);
+    box-shadow:
+      0 0 40px #00ffd133,
+      0 0 80px #8338ec22,
+      0 40px 120px #000000e0;
+    text-align: center;
+    animation: fadeIn 1s ease-out;
+    overflow: hidden;
+  }
+
+  .login-container::before{
+    content:"";
+    position:absolute;
+    inset:-1px;
+    clip-path:inherit;
+    background:linear-gradient(90deg,transparent,#8338ec,#ff006e,#00ffd1,transparent);
+    filter:blur(18px);
+    opacity:.35;
+    animation:edge 6s linear infinite;
+    pointer-events:none;
+  }
+  /* Removed lighting/glow pseudo-elements for heading */
+
+  .login-container h2::before,
+  .login-container h2::after{
+    content: attr(data-text);
+    position: absolute;
+    left: 0; top: 0;
+    opacity: .8;
+    font-size: 32px;
+    letter-spacing: .2em;
+    font-weight: 900;
+  }
+
+  .login-container h2::before{
+    color: #ff006e;
+    transform: translate(2px, 0);
+    animation: gl1 3s infinite linear alternate;
+    text-shadow: 0 0 10px #ff006e99, 0 0 20px #ff006e55;
+  }
+
+  .login-container h2::after{
+    color: #00ffd1;
+    transform: translate(-2px, 0);
+    animation: gl2 3.5s infinite linear alternate;
+    text-shadow: 0 0 10px #00ffd1bb, 0 0 20px #00ffd188;
+  }
+
+  @keyframes gl1{
+    0%{clip-path:inset(20% 0 60% 0)}
+    50%{clip-path:inset(35% 0 30% 0)}
+    100%{clip-path:inset(60% 0 20% 0)}
+  }
+
+  @keyframes gl2{
+    0%{clip-path:inset(50% 0 20% 0)}
+    50%{clip-path:inset(25% 0 45% 0)}
+    100%{clip-path:inset(35% 0 40% 0)}
+  }
+
+  /* -------------------- Buttons -------------------- */
+  .login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    border-radius: 10px;
+    margin: 12px auto;
+    font-weight: 700;
+    cursor: pointer;
+    border: 2px solid #00ffd1;
+    background: linear-gradient(90deg, #23233a 60%, #181824 100%);
+    color: #8338ec;
+    width: 85%;
+    max-width: 320px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px #00ffd155;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .login-btn:hover {
+    background: linear-gradient(90deg, #181824 60%, #23233a 100%);
+    box-shadow: 0 0 30px #00ffd1bb, 0 0 60px #8338ec55;
+    transform: translateY(-3px) scale(1.02);
+    border-color: #8338ec;
+    color: #ff006e;
+  }
+  .login-btn img { width: 22px; height: 22px; }
+
+  /* -------------------- Divider -------------------- */
+  .divider {
+    margin: 40px 0;
+    font-size: 16px;
+    position: relative;
+    color: rgba(224,224,224,0.8);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-weight: 700;
+  }
+  .divider::before, .divider::after {
+    content:"";
+    position:absolute;
+    top:50%;
+    width:35%;
+    height:2px;
+    background: linear-gradient(90deg, transparent, #8338ecbb, #ff006e88, transparent);
+    box-shadow: 0 0 10px #8338ec55;
+  }
+  .divider::before { left:0; }
+  .divider::after { right:0; }
+
+  /* -------------------- Back Link -------------------- */
+  .back-link {
+    display:inline-block;
+    margin-top: 30px;
+    color: #8338ec;
+    text-decoration:none;
+    font-weight: 700;
+    text-shadow: 0 0 8px #8338ec55;
+    transition: all 0.3s ease;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+  .back-link:hover { 
+    color: #ff006e;
+    text-shadow: 0 0 15px #ff006e99;
+    text-decoration: none;
+    transform: translateX(-5px);
+  }
+
+</style>
+</head>
+<body>
+<div class="neon-particles">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="login-container">
+  <div class="scan"></div>
+  <h2 data-text="Log in to NeuroMentor">Log in to NeuroMentor</h2>
+  <button class="login-btn">
+    <img src="google-icon.png" alt="Google"> <span>Continue with Google</span>
+  </button>
+  <button class="login-btn">
+    <img src="facebook-icon.png" alt="Facebook"> <span>Continue with Facebook</span>
+  </button>
+  <button class="login-btn">
+    <img src="github-icon.png" alt="GitHub"> <span>Continue with GitHub</span>
+  </button>
+  <div class="divider">or</div>
+  <button class="login-btn">
+    <img src="email-icon.png" alt="Email"> <span>Log in with Email</span>
+  </button>
+  <a href="index.html" class="back-link">← Back to Home</a>
+</div>
+
+<script>
+  // No script needed, neon rain is CSS animated
+</script>
+</body>
+</html>

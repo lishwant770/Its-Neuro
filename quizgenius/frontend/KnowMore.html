@@ -1,0 +1,704 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NeuroMentor – Know More</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+:root{
+  --console-bg:#000000;
+  --console-panel:#050505;
+  --console-accent:#00ffd1;
+  --console-accent-2:#ff006e;
+  --console-accent-3:#8338ec;
+  --txt:#eaf1ff;
+  --glow-cyan:rgba(0,255,209,0.8);
+  --glow-pink:rgba(255,0,110,0.8);
+  --glow-purple:rgba(131,56,236,0.8);
+  --radius:0;
+  font-family:'Courier New',monospace;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  color:#eaf1ff;
+  background:
+    radial-gradient(1200px at 50% 50%, rgba(131,56,236,.15), transparent 40%),
+    radial-gradient(800px at 20% 80%, rgba(255,0,110,.1), transparent 40%),
+    radial-gradient(800px at 80% 20%, rgba(0,255,209,.1), transparent 40%),
+    #000000;
+  position:relative;
+  overflow-x:hidden;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,.03),
+      rgba(0,0,0,.03) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  opacity:0.95;
+  mix-blend-mode:multiply;
+  z-index:1;
+  animation:flicker 0.15s infinite;
+}
+
+@keyframes flicker{
+  0%{opacity:0.95}
+  50%{opacity:1}
+  100%{opacity:0.95}
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(0,255,209,.04) 0px,
+      rgba(0,255,209,.04) 1px,
+      transparent 1px,
+      transparent 80px
+    );
+  opacity:0.5;
+  mix-blend-mode:screen;
+  z-index:0;
+}
+
+.container{
+  position:relative;
+  max-width:1200px;
+  margin:50px auto;
+  padding:50px 50px;
+  border-radius:0;
+  background:linear-gradient(135deg,rgba(5,5,5,.7),rgba(15,10,25,.5));
+  border:2px solid;
+  border-image:linear-gradient(135deg,var(--glow-cyan),var(--glow-purple),var(--glow-pink)) 1;
+  box-shadow:
+    0 0 40px rgba(0,255,209,.15),
+    0 0 80px rgba(255,0,110,.08),
+    inset 0 0 40px rgba(131,56,236,.05);
+  clip-path:polygon(0 0,98% 0,100% 2%,100% 98%,98% 100%,0 100%,0 2%);
+  z-index:2;
+}
+
+.container::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  clip-path:inherit;
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      var(--glow-cyan) 25%,
+      var(--glow-purple) 50%,
+      var(--glow-pink) 75%,
+      transparent 100%);
+  filter:blur(25px);
+  opacity:0.15;
+  animation:edge 10s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes edge{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(100%)}
+}
+
+.hud{
+  position:absolute;
+  width:28px;
+  height:28px;
+  border:2px solid var(--console-accent);
+  transition:all 0.3s;
+  box-shadow:0 0 10px var(--glow-cyan);
+}
+
+.hud.tl{top:14px;left:14px;border-right:none;border-bottom:none;animation:hudTL 3s ease-in-out infinite}
+.hud.tr{top:14px;right:14px;border-left:none;border-bottom:none;animation:hudTR 3s ease-in-out infinite}
+.hud.bl{bottom:14px;left:14px;border-right:none;border-top:none;animation:hudBL 3s ease-in-out infinite}
+.hud.br{bottom:14px;right:14px;border-left:none;border-top:none;animation:hudBR 3s ease-in-out infinite}
+
+@keyframes hudTL{
+  0%,100%{width:28px;height:28px}
+  50%{width:35px;height:35px}
+}
+
+@keyframes hudTR{
+  0%,100%{width:28px;height:28px}
+  50%{width:35px;height:35px}
+}
+
+@keyframes hudBL{
+  0%,100%{width:28px;height:28px}
+  50%{width:35px;height:35px}
+}
+
+@keyframes hudBR{
+  0%,100%{width:28px;height:28px}
+  50%{width:35px;height:35px}
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:40px;
+  padding-bottom:24px;
+  border-bottom:2px solid;
+  border-image:linear-gradient(90deg,var(--glow-cyan),transparent) 1;
+  animation:slideDown 0.8s ease-out;
+}
+
+@keyframes slideDown{
+  from{opacity:0;transform:translateY(-20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  animation:fadeIn 1s ease-out 0.2s both;
+}
+
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+.logo{
+  width:56px;
+  height:56px;
+  border-radius:0;
+  background:linear-gradient(135deg,var(--console-accent),var(--console-accent-3));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#000;
+  font-weight:900;
+  font-size:1.2rem;
+  box-shadow:0 0 20px var(--glow-cyan),inset 0 0 10px rgba(0,255,209,.2);
+  animation:logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat{
+  0%,100%{transform:translateY(0px)}
+  50%{transform:translateY(-8px)}
+}
+
+.brand h1{
+  color:var(--console-accent);
+  text-shadow:0 0 15px var(--glow-cyan);
+  margin:0;
+  font-size:1.6rem;
+  letter-spacing:0.1em;
+}
+
+.brand .muted{
+  font-size:0.85rem;
+  color:#7fb3c5;
+  text-shadow:0 0 5px rgba(0,255,209,.2);
+}
+
+nav{
+  display:flex;
+  gap:8px;
+  animation:fadeIn 1s ease-out 0.4s both;
+}
+
+nav a{
+  padding:10px 18px;
+  color:#9fced5;
+  text-decoration:none;
+  font-weight:700;
+  border:2px solid transparent;
+  transition:all 0.3s;
+  position:relative;
+  letter-spacing:0.08em;
+  text-shadow:0 0 5px rgba(0,255,209,.2);
+}
+
+nav a::after{
+  content:"";
+  position:absolute;
+  bottom:-2px;
+  left:0;
+  width:0;
+  height:2px;
+  background:linear-gradient(90deg,var(--console-accent),var(--console-accent-3));
+  transition:width 0.3s;
+  box-shadow:0 0 10px var(--glow-cyan);
+}
+
+nav a:hover::after{width:100%}
+
+nav a.primary{
+  border:2px solid var(--console-accent);
+  color:var(--console-accent);
+  box-shadow:0 0 15px var(--glow-cyan);
+}
+
+nav a.primary:hover{
+  background:linear-gradient(135deg,var(--console-accent),rgba(0,255,209,.3));
+  box-shadow:0 0 25px var(--glow-cyan);
+}
+
+.card{
+  background:linear-gradient(135deg,rgba(10,10,20,.8),rgba(20,5,30,.6));
+  border-radius:0;
+  padding:28px;
+  border:2px solid;
+  border-image:linear-gradient(135deg,var(--glow-cyan),var(--glow-purple)) 1;
+  box-shadow:0 0 25px rgba(0,255,209,.12),inset 0 0 20px rgba(131,56,236,.05);
+  margin-bottom:24px;
+  position:relative;
+  overflow:hidden;
+  transition:all 0.3s;
+  animation:fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.card:hover{
+  border-image:linear-gradient(135deg,var(--glow-pink),var(--glow-cyan)) 1;
+  box-shadow:0 0 35px rgba(0,255,209,.18),0 0 40px rgba(255,0,110,.12),inset 0 0 25px rgba(131,56,236,.08);
+  transform:translateY(-4px);
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 50% 50%,rgba(0,255,209,.05),transparent);
+  pointer-events:none;
+}
+
+.hero{
+  display:grid;
+  grid-template-columns:1fr 380px;
+  gap:24px;
+  animation-delay:0.1s;
+}
+
+.eyebrow{
+  font-size:0.8rem;
+  letter-spacing:0.3em;
+  color:#7fb3c5;
+  text-shadow:0 0 5px rgba(0,255,209,.2);
+  text-transform:uppercase;
+  margin-bottom:12px;
+  display:block;
+}
+
+h1,h2,h3,h4{
+  color:var(--console-accent);
+  text-shadow:0 0 15px var(--glow-cyan);
+  margin:0 0 12px 0;
+  font-weight:900;
+  letter-spacing:0.08em;
+}
+
+h2{
+  font-size:2rem;
+  line-height:1.2;
+}
+
+h3{
+  font-size:1.5rem;
+  margin-bottom:18px;
+}
+
+.lead,
+.muted{
+  color:#b0d4e3;
+  opacity:0.95;
+  line-height:1.7;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-top:18px;
+}
+
+.feature{
+  background:linear-gradient(135deg,rgba(15,15,30,.9),rgba(25,10,35,.7));
+  padding:18px;
+  border-radius:0;
+  border-left:4px solid var(--console-accent);
+  border-top:1px solid rgba(0,255,209,.3);
+  box-shadow:0 0 15px rgba(0,255,209,.1),inset 0 0 10px rgba(131,56,236,.05);
+  transition:all 0.3s;
+  cursor:pointer;
+}
+
+.feature:hover{
+  border-left:4px solid var(--console-accent-2);
+  transform:translateY(-4px);
+  box-shadow:0 0 25px rgba(0,255,209,.15),0 0 30px rgba(255,0,110,.1),inset 0 0 15px rgba(131,56,236,.08);
+}
+
+.feature h4{
+  font-size:1.1rem;
+  margin-bottom:8px;
+}
+
+.btn{
+  padding:12px 24px;
+  border-radius:0;
+  font-weight:900;
+  cursor:pointer;
+  border:2px solid var(--console-accent);
+  background:linear-gradient(135deg,rgba(0,255,209,.05),rgba(131,56,236,.05));
+  color:var(--console-accent);
+  transition:all 0.3s;
+  text-shadow:0 0 10px var(--glow-cyan);
+  letter-spacing:0.1em;
+  box-shadow:0 0 15px rgba(0,255,209,.2),inset 0 0 10px rgba(0,255,209,.05);
+  position:relative;
+  overflow:hidden;
+}
+
+.btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent,rgba(0,255,209,.3),transparent);
+  transform:translateX(-120%);
+  animation:btnScan 4s linear infinite;
+}
+
+@keyframes btnScan{
+  to{transform:translateX(120%)}
+}
+
+.btn:hover{
+  background:linear-gradient(135deg,var(--console-accent),rgba(0,255,209,.8));
+  color:#000;
+  box-shadow:0 0 30px var(--glow-cyan),0 0 60px rgba(0,255,209,.4),inset 0 0 20px rgba(0,255,209,.3);
+  transform:translateY(-2px);
+}
+
+.btn.primary{
+  background:linear-gradient(135deg,var(--console-accent),rgba(0,255,209,.9));
+  color:#000;
+  border:2px solid var(--console-accent);
+  box-shadow:0 0 20px var(--glow-cyan),inset 0 0 15px rgba(0,255,209,.2);
+}
+
+.btn.primary:hover{
+  background:linear-gradient(135deg,var(--console-accent-2),rgba(255,0,110,.8));
+  border-color:var(--console-accent-2);
+  box-shadow:0 0 30px var(--glow-pink),0 0 50px rgba(255,0,110,.3);
+}
+
+.testimonials{
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px;
+  margin-top:18px;
+}
+
+.quote{
+  flex:1;
+  min-width:260px;
+  background:linear-gradient(135deg,rgba(15,15,30,.9),rgba(25,10,35,.7));
+  padding:18px;
+  border-radius:0;
+  border-left:4px solid var(--console-accent-2);
+  border-top:1px solid rgba(255,0,110,.3);
+  box-shadow:0 0 15px rgba(255,0,110,.1),inset 0 0 10px rgba(131,56,236,.05);
+  transition:all 0.3s;
+  cursor:pointer;
+}
+
+.quote:hover{
+  transform:translateY(-4px);
+  box-shadow:0 0 25px rgba(255,0,110,.15),0 0 30px rgba(0,255,209,.1),inset 0 0 15px rgba(131,56,236,.08);
+}
+
+.quote strong{
+  color:var(--console-accent-2);
+  text-shadow:0 0 10px var(--glow-pink);
+}
+
+.faq-item{
+  background:linear-gradient(135deg,rgba(15,15,30,.9),rgba(25,10,35,.7));
+  padding:16px;
+  border-radius:0;
+  border-left:4px solid var(--console-accent-3);
+  border-top:1px solid rgba(131,56,236,.3);
+  margin-bottom:12px;
+  cursor:pointer;
+  transition:all 0.3s;
+  box-shadow:0 0 15px rgba(131,56,236,.1),inset 0 0 10px rgba(131,56,236,.05);
+}
+
+.faq-item:hover{
+  box-shadow:0 0 25px rgba(131,56,236,.15),0 0 30px rgba(0,255,209,.1),inset 0 0 15px rgba(131,56,236,.08);
+  transform:translateX(4px);
+}
+
+.faq-q{
+  display:flex;
+  justify-content:space-between;
+  font-weight:900;
+  color:var(--console-accent);
+  text-shadow:0 0 10px var(--glow-purple);
+  align-items:center;
+}
+
+.faq-a{
+  max-height:0;
+  overflow:hidden;
+  opacity:0;
+  transition:0.4s cubic-bezier(0.4,0,0.2,1);
+  color:#b0d4e3;
+  margin-top:0;
+}
+
+.faq-item.active .faq-a{
+  max-height:300px;
+  opacity:1;
+  margin-top:12px;
+  animation:slideDown 0.4s ease-out;
+}
+
+.symbol{
+  color:var(--console-accent-3);
+  font-size:20px;
+  font-weight:900;
+  transition:transform 0.3s;
+}
+
+.faq-item.active .symbol{
+  transform:rotate(45deg);
+}
+
+input,textarea{
+  background:linear-gradient(135deg,rgba(15,15,30,.9),rgba(20,10,25,.7));
+  border:2px solid var(--console-accent);
+  border-radius:0;
+  padding:12px;
+  color:white;
+  font-family:inherit;
+  transition:all 0.3s;
+  box-shadow:0 0 10px rgba(0,255,209,.1),inset 0 0 10px rgba(0,255,209,.05);
+}
+
+input:focus,textarea:focus{
+  outline:none;
+  background:linear-gradient(135deg,rgba(20,15,35,.95),rgba(25,10,35,.8));
+  border-color:var(--console-accent-2);
+  box-shadow:0 0 25px rgba(0,255,209,.2),0 0 30px rgba(255,0,110,.1),inset 0 0 15px rgba(0,255,209,.1);
+}
+
+input::placeholder,textarea::placeholder{
+  color:#7fb3c5;
+}
+
+footer{
+  margin-top:32px;
+  color:#7fb3c5;
+  display:flex;
+  justify-content:space-between;
+  border-top:2px solid;
+  border-image:linear-gradient(90deg,var(--glow-purple),transparent) 1;
+  padding-top:18px;
+  font-size:0.85rem;
+  text-shadow:0 0 5px rgba(131,56,236,.2);
+}
+
+footer a{
+  color:#00ffd1;
+  text-decoration:none;
+  transition:all 0.3s;
+  text-shadow:0 0 10px var(--glow-cyan);
+}
+
+footer a:hover{
+  color:var(--console-accent-2);
+  text-shadow:0 0 15px var(--glow-pink);
+}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}
+  h2{font-size:1.6rem}
+  .grid{grid-template-columns:1fr 1fr}
+  .container{padding:40px 30px}
+}
+
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr}
+  nav{flex-direction:column;gap:12px;align-items:flex-end}
+  nav a{margin-left:0}
+  header{flex-direction:column;align-items:flex-start;gap:16px}
+  .testimonials{flex-direction:column}
+  .quote{min-width:auto}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="hud tl"></div>
+  <div class="hud tr"></div>
+  <div class="hud bl"></div>
+  <div class="hud br"></div>
+
+<header>
+  <div class="brand">
+    <div class="logo">NM</div>
+    <div>
+      <h1>NeuroMentor</h1>
+      <div class="muted">AI Cognitive Coaching • QuizGen • Memory Engineering</div>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="home.html">Quizzes</a>
+    <a class="primary" href="#">Know More</a>
+  </nav>
+</header>
+
+<section class="hero">
+
+  <div class="card">
+    <span class="eyebrow">KNOW MORE • NEUROMENTOR</span>
+    <h2>Transform how students learn — one synapse at a time ⚡</h2>
+    <p class="lead">
+      NeuroMentor fuses adaptive quizzes, spaced recall, and personalized cognitive pathways into a single platform.
+      We don't just test — we build memory maps that last.
+    </p>
+
+    <div style="display:flex;gap:10px;margin-bottom:14px">
+      <button class="btn primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get Started</button>
+      <button class="btn" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How it works</button>
+    </div>
+
+    <div class="grid">
+      <div class="feature">
+        <h4>🧠 Adaptive Memory</h4>
+        <p class="muted">Spaced recall engine predicts optimal review windows so learners never forget.</p>
+      </div>
+      <div class="feature">
+        <h4>⚡ Instant Feedback</h4>
+        <p class="muted">Heatmaps, weakness clusters, and step-by-step tactics for mastery.</p>
+      </div>
+      <div class="feature">
+        <h4>🌐 Curriculum Sync</h4>
+        <p class="muted">Auto-generates syllabus-aligned quizzes for Grades 8–12 & Olympiads.</p>
+      </div>
+    </div>
+  </div>
+
+  <aside class="card" style="display:flex;align-items:center;justify-content:center">
+    🧩 NeuroMentor Core
+  </aside>
+
+</section>
+
+<section class="card">
+  <h3>Our Mission</h3>
+  <p class="muted">
+    We believe education should work like the brain itself — adaptive, interconnected, and unforgettable.
+    NeuroMentor bridges neuroscience and learning tech to make mastery inevitable.
+  </p>
+</section>
+
+<section id="how" class="card">
+  <h3>How NeuroMentor Works</h3>
+  <ol class="muted" style="line-height:1.8">
+    <li><strong>Assess</strong> — Quick diagnostic quiz to map knowledge & memory strength.</li>
+    <li><strong>Personalize</strong> — AI builds adaptive learning paths from cognitive fingerprints.</li>
+    <li><strong>Reinforce</strong> — Spaced recall, mixed practice, and nudges ensure mastery.</li>
+  </ol>
+</section>
+
+<section class="card">
+  <h3>What people say</h3>
+  <div class="testimonials">
+    <div class="quote">“My students retain 2× more than before.”<strong>— Aditi, Teacher</strong></div>
+    <div class="quote">“Quizzes actually feel like a game.”<strong>— Rohan, Student</strong></div>
+    <div class="quote">“Analytics pinpoint weaknesses instantly.”<strong>— Mehul, Tutor</strong></div>
+  </div>
+</section>
+
+<section class="card faq">
+  <h3>FAQs</h3>
+
+  <div class="faq-item" onclick="toggleFAQ(this)">
+    <div class="faq-q">Is NeuroMentor safe for kids? <span class="symbol">+</span></div>
+    <div class="faq-a">Yes. We follow strict data privacy rules and a children-first UX.</div>
+  </div>
+
+  <div class="faq-item" onclick="toggleFAQ(this)">
+    <div class="faq-q">Which grades & exams are supported? <span class="symbol">+</span></div>
+    <div class="faq-a">ICSE & CBSE (8–12), Olympiads and custom syllabi.</div>
+  </div>
+
+  <div class="faq-item" onclick="toggleFAQ(this)">
+    <div class="faq-q">Can I integrate with my LMS? <span class="symbol">+</span></div>
+    <div class="faq-a">Yes. CSV, LTI and Google Classroom connectors.</div>
+  </div>
+</section>
+
+<section id="contact" class="card">
+  <h3>Talk to a NeuroMentor specialist</h3>
+  <form onsubmit="submitForm(event)" style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+    <input name="name" placeholder="Your name" required>
+    <input name="email" type="email" placeholder="Email" required>
+    <textarea name="message" rows="3" placeholder="Tell us about your needs"></textarea>
+    <button class="btn primary" type="submit">Request Demo</button>
+  </form>
+</section>
+
+<footer>
+  <div>© NeuroMentor • Built for curious minds</div>
+  <div>
+    <a href="#" style="color:#9fded5;text-decoration:none">Privacy</a>
+    |
+    <a href="#" style="color:#9fded5;text-decoration:none">Terms</a>
+  </div>
+</footer>
+
+</div>
+
+<script>
+function toggleFAQ(item){
+  item.classList.toggle("active");
+  const s=item.querySelector(".symbol");
+  s.textContent=item.classList.contains("active")?"−":"+";
+}
+function submitForm(e){
+  e.preventDefault();
+  const f=new FormData(e.target);
+  alert("Thanks "+f.get("name")+"! We’ll reach you at "+f.get("email"));
+  e.target.reset();
+}
+</script>
+
+</body>
+</html>

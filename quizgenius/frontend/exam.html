@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,
+initial-scale=1.0">
+<title>Exam</title>
+<link rel="stylesheet" href="style.css">
+<script defer src="app.js"></script>
+</head>
+<body>
+<div class="container exam" id="examRoot">
+<aside class="sidebar">
+<div class="timer"><span> Time Left</span><span id="timeLeft"
+class="badge">--:--</span></div>
+<div id="palette" class="pills"></div>
+<div style="margin-top:12px" class="label">Legend: <span class="badge">Blue
+= current</span> <span class="badge" style="background:#102e22;bordercolor:#1f6f5b">Answered</span></div>
+</aside>
+<main>
+<div class="question">
+<div style="display:flex;justify-content:space-between;alignitems:center">
+<h3 id="qTitle">Question</h3>
+<span id="qMeta" class="badge">Marks: 1</span>
+</div>
+<div id="qText" class="label" style="margin-top:6px"></div>
+<div id="options" class="options"></div>
+<div class="actions">
+    <button class="btn secondary" onclick="prevQ()">⟵ Previous</
+button>
+<button class="btn" onclick="nextQ()">Save & Next ⟶</button>
+<button class="btn" style="background:#22c55e"
+onclick="submitExam()">Submit</button>
+</div>
+</div>
+</main>
+</div>
+</body>
+</html>

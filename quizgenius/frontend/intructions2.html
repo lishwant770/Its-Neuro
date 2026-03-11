@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instructions</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #f8f9fa, #e6f0ff);
+    color: #333;
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 10%;
+    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .btn {
+    background: #4facfe;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .btn:hover {
+    background: #00c6ff;
+    transform: translateY(-2px);
+  }
+  .btn.secondary {
+    background: #eee;
+    color: #333;
+  }
+  .container {
+    display: flex;
+    justify-content: center;
+    margin-top: 60px;
+  }
+  .card {
+    background: white;
+    padding: 32px;
+    border-radius: 16px;
+    width: 70%;
+    max-width: 700px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  }
+  .card h2 {
+    text-align: center;
+    color: #0077b6;
+    margin-bottom: 20px;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    line-height: 1.8;
+  }
+  ul li {
+    margin: 10px 0;
+    background: #f1f8ff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border-left: 5px solid #4facfe;
+  }
+  button {
+    display: block;
+    margin: 20px auto 0;
+  }
+</style>
+<script defer src="app.js"></script>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h2>📘 Test Instructions</h2>
+    <ul>
+      <li>✅ All questions carry equal marks unless stated otherwise.</li>
+      <li>🖊️ Attempt every question carefully. No negative marking unless specified.</li>
+      <li>⏳ The timer will run continuously and the test will auto-submit when it reaches 0.</li>
+      <li>📌 Use the question palette to navigate between questions easily.</li>
+      <li>🔄 You can change your answers anytime before final submission.</li>
+      <li>🚫 Once submitted, you cannot go back or re-attempt.</li>
+      <li>💡 Stay calm, manage time wisely, and give your best effort!</li>
+    </ul>
+    <button class="btn" onclick="beginExam()">Generate From Previous Papers🚀</button>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,740 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NeuroMentor – Student Learning Console</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+:root{
+  --console-bg:#000000;
+  --console-panel:#050505;
+  --console-accent:#00ffd1;
+  --console-accent-2:#ff006e;
+  --console-accent-3:#8338ec;
+  --txt:#eaf1ff;
+  --glow-cyan:rgba(0,255,209,0.8);
+  --glow-pink:rgba(255,0,110,0.8);
+  --glow-purple:rgba(131,56,236,0.8);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Courier New',monospace}
+
+body{
+  background:
+    radial-gradient(1200px at 50% 50%, rgba(131,56,236,.15), transparent 40%),
+    radial-gradient(800px at 20% 80%, rgba(255,0,110,.1), transparent 40%),
+    radial-gradient(800px at 80% 20%, rgba(0,255,209,.1), transparent 40%),
+    #000000;
+  color:var(--txt);
+  overflow-x:hidden;
+  position:relative;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,.03),
+      rgba(0,0,0,.03) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  pointer-events:none;
+  z-index:1;
+  animation:flicker 0.15s infinite;
+}
+
+@keyframes flicker{
+  0%{opacity:0.95}
+  50%{opacity:1}
+  100%{opacity:0.95}
+}
+
+/* ---------- rain ---------- */
+
+.neon-lines{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+.neon-lines span{
+  position:absolute;
+  width:1px;height:100%;
+  background:linear-gradient(to bottom,transparent,var(--glow-cyan),transparent);
+  animation:fall 8s linear infinite;
+  filter:drop-shadow(0 0 15px var(--glow-cyan)) drop-shadow(0 0 30px rgba(0,255,209,.3));
+  opacity:0.6;
+}
+@keyframes fall{
+  0%{transform:translateY(-100%);opacity:0}
+  10%{opacity:0.8}
+  90%{opacity:0.8}
+  100%{transform:translateY(100%);opacity:0}
+}
+.neon-lines span:nth-child(1){left:5%;animation-duration:7s}
+.neon-lines span:nth-child(2){left:25%;animation-delay:1.5s;filter:drop-shadow(0 0 15px var(--glow-pink)) drop-shadow(0 0 30px rgba(255,0,110,.3))}
+.neon-lines span:nth-child(3){left:50%;animation-delay:2s}
+.neon-lines span:nth-child(4){left:75%;animation-delay:1s;animation-duration:9s;filter:drop-shadow(0 0 15px var(--glow-purple)) drop-shadow(0 0 30px rgba(131,56,236,.3))}
+.neon-lines span:nth-child(5){left:95%;animation-delay:0.5s}
+
+/* ---------- nav ---------- */
+
+nav{
+  position:fixed;
+  inset:0 0 auto 0;
+  padding:20px 56px;
+  background:linear-gradient(90deg,rgba(0,0,0,.95),rgba(5,5,5,.8));
+  backdrop-filter:blur(20px);
+  border-bottom:2px solid;
+  border-image:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple),var(--glow-pink)) 1;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:100;
+  box-shadow:0 10px 40px rgba(0,255,209,.1),0 0 60px rgba(255,0,110,.05);
+}
+
+/* soft glitch only for logo */
+
+.brand{
+  position:relative;
+  font-size:1.4rem;
+  font-weight:900;
+  letter-spacing:.35em;
+  color:var(--console-accent);
+  text-shadow:0 0 10px var(--glow-cyan),0 0 20px var(--glow-cyan);
+}
+
+.brand::before,
+.brand::after{
+  content:attr(data-text);
+  position:absolute;
+  left:0;top:0;
+  opacity:.8;
+  font-weight:900;
+}
+
+.brand::before{
+  color:var(--console-accent-2);
+  transform:translate(2px,0);
+  animation:gl1 3s infinite linear alternate;
+  text-shadow:0 0 10px var(--glow-pink),0 0 20px var(--glow-pink);
+}
+
+.brand::after{
+  color:var(--console-accent-3);
+  transform:translate(-2px,0);
+  animation:gl2 3.5s infinite linear alternate;
+  text-shadow:0 0 10px var(--glow-purple),0 0 20px var(--glow-purple);
+}
+
+@keyframes gl1{
+  0%{clip-path:inset(20% 0 60% 0)}
+  50%{clip-path:inset(35% 0 30% 0)}
+  100%{clip-path:inset(60% 0 20% 0)}
+}
+
+@keyframes gl2{
+  0%{clip-path:inset(50% 0 20% 0)}
+  50%{clip-path:inset(25% 0 45% 0)}
+  100%{clip-path:inset(35% 0 40% 0)}
+}
+
+.nav-links a{
+  color:#cfefff;
+  text-decoration:none;
+  margin-left:28px;
+  font-size:.95rem;
+  position:relative;
+  transition:color 0.3s;
+  text-shadow:0 0 5px rgba(0,255,209,.3);
+}
+
+.nav-links a::after{
+  content:"";
+  position:absolute;
+  bottom:-4px;
+  left:0;
+  width:0;
+  height:2px;
+  background:linear-gradient(90deg,var(--console-accent),var(--console-accent-3));
+  transition:width 0.3s;
+  box-shadow:0 0 10px var(--glow-cyan);
+}
+
+.nav-links a:hover{
+  color:var(--console-accent);
+  text-shadow:0 0 20px var(--glow-cyan),0 0 40px var(--glow-cyan);
+}
+
+.nav-links a:hover::after{width:100%}
+
+main{
+  padding-top:120px;
+  max-width:1200px;
+  margin:auto;
+  padding-left:28px;
+  padding-right:28px;
+  position:relative;
+  z-index:2;
+}
+
+/* ---------- console card ---------- */
+
+.console{
+  position:relative;
+  padding:48px 50px;
+  background:linear-gradient(135deg,rgba(5,5,5,.6),rgba(10,10,20,.4));
+  clip-path:polygon(0 0,98% 0,100% 2%,100% 98%,98% 100%,0 100%,0 2%);
+  border:1px solid rgba(0,255,209,.4);
+  box-shadow:
+    0 0 30px rgba(0,255,209,.15),
+    0 0 60px rgba(255,0,110,.08),
+    inset 0 0 30px rgba(131,56,236,.05);
+  margin-bottom:48px;
+  overflow:hidden;
+}
+
+.console::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  clip-path:inherit;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    var(--glow-cyan) 25%,
+    var(--glow-purple) 50%,
+    var(--glow-pink) 75%,
+    transparent 100%);
+  filter:blur(25px);
+  opacity:0.2;
+  animation:edge 8s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes edge{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(100%)}
+}
+
+.scan{
+  position:absolute;
+  left:-50%;
+  top:0;
+  width:50%;
+  height:100%;
+  background:linear-gradient(90deg,
+    transparent,
+    rgba(0,255,209,.08),
+    transparent);
+  animation:scan 7s linear infinite;
+  pointer-events:none;
+  filter:drop-shadow(0 0 10px rgba(0,255,209,.5));
+}
+
+@keyframes scan{from{left:-50%}to{left:150%}}
+
+/* ---------- hero ---------- */
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:40px;
+  align-items:center;
+}
+
+.hero h1{
+  font-size:2.8rem;
+  color:var(--console-accent);
+  letter-spacing:.25em;
+  margin-bottom:20px;
+  text-shadow:0 0 20px var(--glow-cyan),0 0 40px rgba(0,255,209,.3);
+  font-weight:900;
+  line-height:1.2;
+}
+
+.hero p{
+  color:#b0d4e3;
+  max-width:720px;
+  margin-bottom:28px;
+  line-height:1.7;
+  font-size:1.05rem;
+}
+
+/* ---------- image blocks ---------- */
+
+.hero-visual,
+.about-visual{
+  background:linear-gradient(135deg,rgba(5,5,5,.8),rgba(20,10,30,.6));
+  border:2px solid;
+  border-image:linear-gradient(135deg,var(--glow-cyan),var(--glow-purple)) 1;
+  border-radius:0;
+  padding:15px;
+  box-shadow:0 0 30px rgba(0,255,209,.2),inset 0 0 30px rgba(131,56,236,.1);
+}
+
+.hero-visual img,
+.about-visual img{
+  width:100%;
+  border-radius:0;
+  display:block;
+  filter:brightness(1.1) contrast(1.1);
+}
+
+/* ---------- buttons ---------- */
+
+.btn{
+  position:relative;
+  display:inline-block;
+  padding:14px 32px;
+  margin-right:16px;
+  margin-top:10px;
+  border-radius:0;
+  font-weight:900;
+  letter-spacing:.12em;
+  background:linear-gradient(135deg,rgba(0,255,209,.05),rgba(131,56,236,.05));
+  color:var(--console-accent);
+  text-decoration:none;
+  border:2px solid var(--console-accent);
+  overflow:hidden;
+  cursor:pointer;
+  transition:all 0.3s;
+  text-shadow:0 0 10px var(--glow-cyan);
+  box-shadow:0 0 15px rgba(0,255,209,.2),inset 0 0 15px rgba(0,255,209,.05);
+}
+
+.btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent,rgba(0,255,209,.4),transparent);
+  transform:translateX(-120%);
+  animation:btnscan 4s linear infinite;
+}
+
+@keyframes btnscan{to{transform:translateX(120%)}}
+
+.btn:hover{
+  color:#000;
+  background:linear-gradient(135deg,var(--console-accent),rgba(0,255,209,.8));
+  box-shadow:
+    0 0 30px var(--glow-cyan),
+    0 0 60px rgba(0,255,209,.4),
+    inset 0 0 20px rgba(0,255,209,.3);
+  border-color:var(--console-accent);
+  transform:translateY(-2px);
+}
+
+/* ---------- cards ---------- */
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:24px;
+  margin-top:28px;
+}
+
+.card{
+  background:linear-gradient(135deg,rgba(10,10,20,.8),rgba(20,5,30,.6));
+  padding:28px;
+  border-left:4px solid var(--console-accent);
+  border-top:1px solid rgba(0,255,209,.3);
+  transition:all 0.3s;
+  box-shadow:0 0 20px rgba(0,255,209,.1),inset 0 0 15px rgba(131,56,236,.05);
+  cursor:pointer;
+}
+
+.card:hover{
+  border-left:4px solid var(--console-accent-2);
+  box-shadow:
+    0 0 30px rgba(0,255,209,.2),
+    0 0 40px rgba(255,0,110,.15),
+    inset 0 0 20px rgba(131,56,236,.1);
+  transform:translateY(-4px);
+  background:linear-gradient(135deg,rgba(15,15,30,.9),rgba(25,10,35,.7));
+}
+
+.card h3{
+  color:var(--console-accent);
+  font-size:1.05rem;
+  margin-bottom:12px;
+  text-shadow:0 0 10px var(--glow-cyan);
+  font-weight:800;
+}
+
+.card p{
+  color:#9fced5;
+  font-size:0.95rem;
+  line-height:1.6;
+}
+
+/* ---------- section titles ---------- */
+
+.section-title{
+  color:var(--console-accent);
+  letter-spacing:.25em;
+  margin-bottom:20px;
+  font-size:1.8rem;
+  text-shadow:0 0 15px var(--glow-cyan);
+  font-weight:900;
+  position:relative;
+  display:inline-block;
+}
+
+.section-title::after{
+  content:"";
+  position:absolute;
+  bottom:-8px;
+  left:0;
+  width:100%;
+  height:2px;
+  background:linear-gradient(90deg,var(--console-accent),transparent);
+  box-shadow:0 0 10px var(--glow-cyan);
+}
+
+/* ---------- footer ---------- */
+
+footer{
+  margin-top:80px;
+  padding:28px 0;
+  text-align:center;
+  font-size:.85rem;
+  color:#7fb3c5;
+  border-top:2px solid;
+  border-image:linear-gradient(90deg,var(--glow-cyan),transparent) 1;
+  background:linear-gradient(90deg,rgba(0,255,209,.02),transparent);
+  text-shadow:0 0 5px rgba(0,255,209,.2);
+}
+
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero h1{font-size:2.2rem}
+  nav{padding:16px 24px}
+  .brand{font-size:1.1rem}
+  .nav-links a{margin-left:14px;font-size:.85rem}
+}
+/* popup overlay */
+
+.popup-overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.85);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:99999;
+}
+
+/* popup console */
+
+.popup-console{
+
+background:rgba(10,10,20,.9);
+padding:40px;
+border:1px solid rgba(0,255,209,.5);
+box-shadow:0 0 30px rgba(0,255,209,.4);
+text-align:center;
+min-width:320px;
+}
+
+/* title */
+
+.popup-console h2{
+color:#00ffd1;
+margin-bottom:20px;
+letter-spacing:.15em;
+}
+
+/* role buttons */
+
+.roleBtn,
+.themeBtn{
+
+display:block;
+margin:12px auto;
+width:200px;
+
+}
+
+/* optional glow */
+
+.popup-console::after{
+
+content:"";
+position:absolute;
+inset:-2px;
+
+background:linear-gradient(
+90deg,
+#00ffd1,
+#8338ec,
+#ff006e,
+#00ffd1
+);
+
+background-size:300%;
+filter:blur(10px);
+opacity:0.4;
+animation:borderGlow 6s linear infinite;
+z-index:-1;
+
+}
+
+@keyframes borderGlow{
+
+0%{background-position:0%}
+100%{background-position:300%}
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="neon-lines">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<nav>
+  <div class="brand" data-text="NEUROMENTOR">NEUROMENTOR</div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="home.html">Tests</a>
+    <a href="KnowMore.html">Know more</a>
+    <a href="login.html">Login</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO -->
+
+<section class="console hero">
+  <div class="scan"></div>
+
+  <div class="hero-grid">
+
+    <div>
+      <h1>STUDENT LEARNING CONSOLE</h1>
+      <p>
+        NeuroMentor is a structured academic console for ICSE / CBSE and
+        competitive preparation.  
+        It focuses on reasoning accuracy, diagrams, LaTeX-based explanations
+        and measurable concept stability.
+      </p>
+
+      <a class="btn" href="home.html">TAKE TEST</a>
+      <a class="btn" href="KnowMore.html">KNOW MORE</a>
+      <a class="btn" href="doubt.html">AI DOUBT SOLVER</a>
+    </div>
+
+    <div class="hero-visual">
+      <!-- keep your own image here -->
+      <img src="desk.png" alt="NeuroMentor AI">
+    </div>
+
+  </div>
+</section>
+
+<!-- FEATURES -->
+
+<section class="console">
+  <div class="scan"></div>
+
+  <h2 class="section-title">CORE MODULES</h2>
+
+  <div class="grid">
+    <div class="card">
+      <h3>AI Question Solver</h3>
+      <p>Step-wise solutions with LaTeX and TikZ diagrams.</p>
+    </div>
+    <div class="card">
+      <h3>Adaptive Test Engine</h3>
+      <p>Difficulty adapts using real performance data.</p>
+    </div>
+    <div class="card">
+      <h3>Chapter Heatmaps</h3>
+      <p>Weak-area clustering and revision targeting.</p>
+    </div>
+    <div class="card">
+      <h3>Exam Simulation</h3>
+      <p>ICSE, CBSE and Olympiad patterns.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+
+<section class="console">
+  <div class="scan"></div>
+
+  <h2 class="section-title">WHY NEUROMENTOR</h2>
+
+  <p style="max-width:760px;color:#9fded5;line-height:1.6">
+    Traditional platforms only track marks.
+    NeuroMentor tracks reasoning accuracy, time behaviour and concept decay,
+    allowing real learning paths instead of random practice.
+  </p>
+</section>
+
+<!-- WORKFLOW -->
+
+<section class="console">
+  <div class="scan"></div>
+
+  <h2 class="section-title">LEARNING FLOW</h2>
+
+  <div class="grid">
+    <div class="card"><h3>Diagnose</h3><p>Initial short tests build concept profile.</p></div>
+    <div class="card"><h3>Adapt</h3><p>Difficulty automatically shifts.</p></div>
+    <div class="card"><h3>Reinforce</h3><p>Weak topics scheduled again.</p></div>
+    <div class="card"><h3>Analyse</h3><p>Detailed performance dashboards.</p></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+
+<section class="console">
+  <div class="scan"></div>
+
+  <div class="hero-grid">
+
+    <div>
+      <h2 class="section-title">ABOUT PLATFORM</h2>
+      <p style="color:#9fded5;max-width:650px;line-height:1.6">
+        NeuroMentor is designed as a serious academic console, not a casual
+        chatbot.  
+        It supports diagram rendering, structured explanations and exam-aligned
+        practice flows.
+      </p>
+    </div>
+
+    <div class="about-visual">
+      <img src="book.png" alt="AI education illustration">
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+
+<section class="console">
+  <div class="scan"></div>
+
+  <h2 class="section-title">CONTACT</h2>
+
+  <form style="max-width:420px">
+
+    <label style="font-size:.75rem;color:#9fded5">Name</label>
+    <input style="width:100%;margin-bottom:12px;background:#0a0a0a;border:1px solid rgba(0,255,209,.3);color:white;padding:8px">
+
+    <label style="font-size:.75rem;color:#9fded5">Email</label>
+    <input style="width:100%;margin-bottom:12px;background:#0a0a0a;border:1px solid rgba(0,255,209,.3);color:white;padding:8px">
+
+    <label style="font-size:.75rem;color:#9fded5">Message</label>
+    <textarea style="width:100%;height:90px;background:#0a0a0a;border:1px solid rgba(0,255,209,.3);color:white;padding:8px"></textarea>
+
+    <br><br>
+    <a class="btn" href="#">SEND</a>
+  </form>
+</section>
+
+<footer>
+  © 2025 NeuroMentor – Student Learning Console
+</footer>
+
+</main>
+<div id="rolePopup" class="popup-overlay">
+
+  <div class="popup-console">
+
+    <h2>Choose your mode</h2>
+
+    <div id="roleSelect">
+
+      <button class="btn" onclick="selectRole('student')">
+        Student
+      </button>
+
+      <button class="btn" onclick="selectRole('teacher')">
+        Teacher
+      </button>
+
+    </div>
+
+    <div id="themeSelect" style="display:none">
+
+      <h3>Select Theme</h3>
+
+      <button class="btn" onclick="selectTheme('cyberpunk')">
+        Cyberpunk
+      </button>
+
+      <button class="btn" onclick="selectTheme('professional')">
+        Professional
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+<script>
+
+/* check if user already selected during this visit */
+
+window.onload = function(){
+
+if(sessionStorage.getItem("themeChosen") === "true"){
+document.getElementById("rolePopup").style.display = "none"
+}
+
+}
+
+/* role selection */
+
+function selectRole(role){
+
+if(role === "teacher"){
+
+sessionStorage.setItem("themeChosen","true")
+window.location.href = "in2.html"
+
+}
+
+if(role === "student"){
+
+document.getElementById("roleSelect").style.display = "none"
+document.getElementById("themeSelect").style.display = "block"
+
+}
+
+}
+
+/* theme selection */
+
+function selectTheme(theme){
+
+sessionStorage.setItem("themeChosen","true")
+
+if(theme === "cyberpunk"){
+window.location.href = "index.html"
+}
+
+if(theme === "professional"){
+window.location.href = "in2.html"
+}
+
+}
+
+</script>
+</body>
+</html>
+

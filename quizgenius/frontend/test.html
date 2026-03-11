@@ -1,0 +1,432 @@
+<!DOCTYPE html><html>
+<head><script>
+window.MathJax = {
+tex:{
+inlineMath:[['$','$'],['\','\']],
+displayMath:[['$$','$$']]
+}
+};
+/* ---------- ANTI REFRESH ---------- */
+
+if(sessionStorage.getItem("examStarted")){
+alert("Refreshing will terminate the exam.")
+}
+else{
+sessionStorage.setItem("examStarted","true")
+}
+
+/* block reload */
+
+window.onbeforeunload = function(){
+return "Exam in progress";
+}
+history.pushState(null,null,location.href)
+
+window.onpopstate = function(){
+history.go(1)
+}
+</script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script><title>NeuroMentor Test</title><style>
+body{
+background:#05070c;
+color:white;
+font-family:'Share Tech Mono',monospace;
+overflow:hidden;
+}
+
+/* animated grid */
+
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background-image:
+linear-gradient(rgba(0,255,209,.07) 1px, transparent 1px),
+linear-gradient(90deg, rgba(0,255,209,.07) 1px, transparent 1px);
+background-size:50px 50px;
+animation:gridmove 8s linear infinite;
+pointer-events:none;
+}
+
+@keyframes gridmove{
+0%{transform:translateY(0)}
+100%{transform:translateY(50px)}
+}
+
+/* header */
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:16px 40px;
+background:rgba(10,15,25,.9);
+border-bottom:1px solid rgba(0,255,209,.4);
+box-shadow:0 0 20px rgba(0,255,209,.25);
+}
+
+.header h2{
+color:#00ffd1;
+letter-spacing:.15em;
+text-shadow:0 0 10px #00ffd1;
+}
+
+.header h3{
+color:#ff00ea;
+text-shadow:0 0 8px #ff00ea;
+}
+
+.header button{
+background:#00ffd1;
+border:none;
+padding:10px 24px;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* layout */
+
+.container{
+display:flex;
+height:calc(100vh - 70px);
+}
+
+.left{
+    flex:1;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+padding:40px;
+}
+
+
+
+.question{
+font-size:24px;
+max-width:750px;
+text-align:center;
+margin-bottom:30px;
+color:#00ffd1;
+text-shadow:0 0 10px #00ffd1;
+}
+.right{
+width: 320px;
+background:#0b111c;
+border-left:1px solid rgba(0,255,209,.35);
+padding:20px;
+overflow-y:auto;
+}
+.options{
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+.options button{
+width:420px;
+margin:12px 0;
+padding:14px;
+background:#050a14;
+border:1px solid #00ffd1;
+color:white;
+transition:all .25s;
+}
+
+.options button:hover{
+background:#00ffd1;
+color:black;
+box-shadow:0 0 15px #00ffd1;
+}
+
+.options button.selected{
+background:#ff00ea;
+border-color:#ff00ea;
+box-shadow:0 0 15px #ff00ea;
+}
+
+/* palette */
+
+.palette{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:12px;
+margin-top:20px;
+}
+
+.qbox{
+width:42px;
+height:42px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#1c2335;
+cursor:pointer;
+border:1px solid #333;
+}
+
+.qbox.current{
+border:2px solid #00ffd1;
+}
+
+.qbox.answered{
+background:#00ffd1;
+color:black;
+}
+
+.qbox.review{
+background:#ff00ea;
+}
+
+/* buttons */
+
+.controls{
+margin-top:30px;
+}
+
+.controls button{
+padding:10px 22px;
+margin-right:12px;
+background:#111;
+color:white;
+border:1px solid #00ffd1;
+cursor:pointer;
+}
+
+.controls button:hover{
+background:#00ffd1;
+color:black;
+}
+
+</style></head><body><div class="header"><h2>NeuroMentor Exam</h2><h3 id="timer">Time: --:--</h3><button onclick="submitTest()">Submit</button>
+
+</div><div class="container">
+
+  <div class="left">
+
+    <div id="questionBox" class="question"></div>
+
+    <div class="options">
+      <button class="opt"></button>
+      <button class="opt"></button>
+      <button class="opt"></button>
+      <button class="opt"></button>
+    </div>
+
+    <div class="controls">
+      <button onclick="prevQuestion()">Previous</button>
+      <button onclick="markReview()">Mark for Review</button>
+      <button onclick="saveNext()">Next</button>
+    </div>
+
+  </div>
+
+  <div class="right">
+    <h3>Question Palette</h3>
+    <div id="palette" class="palette"></div>
+  </div>
+
+</div><script>
+
+const questions = JSON.parse(sessionStorage.getItem("mcqQuestions"))
+
+let index = 0
+let answers = new Array(questions.length).fill(null)
+let review = new Array(questions.length).fill(false)
+
+const questionBox = document.getElementById("questionBox")
+const optionButtons = document.querySelectorAll(".opt")
+const palette = document.getElementById("palette")
+
+const duration = parseInt(sessionStorage.getItem("testDuration")) || questions.length * 2
+let timeLeft = duration * 60
+
+
+/* ---------- build palette ---------- */
+
+questions.forEach((q,i)=>{
+
+const box=document.createElement("div")
+
+box.className="qbox"
+
+box.innerText=i+1
+
+box.onclick=()=>{
+
+index=i
+
+loadQuestion()
+
+}
+
+palette.appendChild(box)
+
+})
+
+
+/* ---------- load question ---------- */
+
+function loadQuestion(){
+
+const q=questions[index]
+
+questionBox.innerHTML="Q"+(index+1)+". "+q.question
+
+optionButtons.forEach((btn,i)=>{
+
+btn.innerHTML=q.options[i]
+
+btn.classList.remove("selected")
+
+if(answers[index]===i){
+
+btn.classList.add("selected")
+
+}
+
+btn.onclick=()=>{
+
+answers[index]=i
+
+updatePalette()
+
+loadQuestion()
+
+}
+
+})
+
+updatePalette()
+
+if(window.MathJax){
+
+MathJax.typesetClear()
+
+MathJax.typesetPromise()
+
+}
+
+}
+
+
+/* ---------- palette colors ---------- */
+
+function updatePalette(){
+
+document.querySelectorAll(".qbox").forEach((box,i)=>{
+
+box.classList.remove("answered","review","current")
+
+if(i===index) box.classList.add("current")
+
+if(review[i]) box.classList.add("review")
+
+else if(answers[i]!=null) box.classList.add("answered")
+
+})
+
+}
+
+
+/* ---------- buttons ---------- */
+
+function saveNext(){
+
+if(index<questions.length-1){
+
+index++
+
+loadQuestion()
+
+}
+
+}
+
+function markReview(){
+
+review[index]=true
+
+saveNext()
+
+}
+
+
+/* ---------- timer ---------- */
+
+function startTimer(){
+
+const timer=document.getElementById("timer")
+
+const interval=setInterval(()=>{
+
+const minutes=Math.floor(timeLeft/60)
+
+const seconds=timeLeft%60
+
+timer.innerText="Time: "+minutes+":"+(seconds<10?"0":"")+seconds
+
+timeLeft--
+
+if(timeLeft<0){
+
+clearInterval(interval)
+
+submitTest()
+
+}
+
+},1000)
+
+}
+function prevQuestion(){
+
+if(index>0){
+index--
+loadQuestion()
+}
+
+}
+
+
+/* ---------- submit ---------- */
+function submitTest(){
+
+let score = 0
+let wrongQuestions = []
+let chapterStats = {}
+
+questions.forEach((q,i)=>{
+
+if(answers[i] === q.answerIndex){
+score++
+}else{
+wrongQuestions.push({
+question:q.question,
+chapter:q.chapter,
+subject:q.subject
+})
+
+if(!chapterStats[q.chapter]){
+chapterStats[q.chapter]={correct:0,wrong:0}
+}
+
+chapterStats[q.chapter].wrong++
+}
+
+})
+
+const resultData = {
+score:score,
+total:questions.length,
+accuracy:Math.round((score/questions.length)*100),
+chapterStats:chapterStats,
+wrongQuestions:wrongQuestions
+}
+
+sessionStorage.setItem("examResult",JSON.stringify(resultData))
+
+window.location.href="result.html"
+
+}</script>
+</body>
+</html>

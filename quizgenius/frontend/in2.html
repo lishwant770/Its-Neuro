@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NeuroMentor – Student Learning Console</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+  --bg:#f9fafb;
+  --panel:#ffffff;
+  --accent:#2563eb;   /* modern indigo */
+  --accent-2:#0ea5e9; /* cyan */
+  --txt:#1f2937;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter','Poppins','Segoe UI',sans-serif}
+
+body {
+  background: var(--bg);
+  color: var(--txt);
+  line-height:1.6;
+}
+
+/* ---------- nav ---------- */
+nav {
+  position:fixed;
+  inset:0 0 auto 0;
+  padding:18px 48px;
+  background:#ffffff;
+  border-bottom:1px solid #e5e7eb;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:100;
+}
+
+.brand {
+  font-size:1.5rem;
+  font-weight:700;
+  color:var(--accent);
+}
+
+.nav-links a {
+  color:#374151;
+  text-decoration:none;
+  margin-left:28px;
+  font-size:1rem;
+  transition:color 0.3s;
+}
+
+.nav-links a:hover {
+  color:var(--accent);
+}
+
+/* ---------- main ---------- */
+main {
+  padding-top:100px;
+  max-width:1200px;
+  margin:auto;
+  padding-left:32px;
+  padding-right:32px;
+}
+
+/* ---------- console card ---------- */
+.console {
+  padding:48px;
+  background: var(--panel);
+  border-radius:12px;
+  border:1px solid #e5e7eb;
+  box-shadow:0 6px 20px rgba(0,0,0,0.05);
+  margin-bottom:48px;
+}
+
+/* ---------- hero ---------- */
+.hero-grid {
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:40px;
+  align-items:center;
+}
+
+.hero h1 {
+  font-size:2.8rem;
+  color:var(--accent);
+  margin-bottom:20px;
+  font-weight:700;
+}
+
+.hero p {
+  color:#4b5563;
+  max-width:720px;
+  margin-bottom:28px;
+  font-size:1.1rem;
+}
+
+/* ---------- image blocks ---------- */
+.hero-visual,
+.about-visual {
+  background:#f9fafb;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:20px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
+}
+
+.hero-visual img,
+.about-visual img {
+  width:100%;
+  border-radius:8px;
+  display:block;
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display:inline-block;
+  padding:14px 32px;
+  margin-right:16px;
+  margin-top:10px;
+  border-radius:30px;
+  font-weight:600;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#fff;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
+  transition:transform 0.2s, box-shadow 0.3s;
+}
+
+.btn:hover {
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(37,99,235,0.3);
+}
+
+/* ---------- cards ---------- */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:28px;
+  margin-top:28px;
+}
+
+.card {
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:28px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
+  transition:transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 6px 20px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+  color:var(--accent);
+  font-size:1.2rem;
+  margin-bottom:12px;
+  font-weight:600;
+}
+
+.card p {
+  color:#4b5563;
+  font-size:1rem;
+}
+
+/* ---------- section titles ---------- */
+.section-title {
+  color:var(--accent);
+  margin-bottom:24px;
+  font-size:1.8rem;
+  font-weight:700;
+  position:relative;
+}
+
+.section-title::after {
+  content:"";
+  position:absolute;
+  bottom:-8px;
+  left:0;
+  width:60px;
+  height:3px;
+  background:var(--accent);
+  border-radius:2px;
+}
+
+/* ---------- footer ---------- */
+footer {
+  margin-top:60px;
+  padding:28px 0;
+  text-align:center;
+  font-size:.95rem;
+  color:#6b7280;
+  border-top:1px solid #e5e7eb;
+  background:#f9fafb;
+}
+
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero h1{font-size:2.2rem}
+  nav{padding:12px 20px}
+  .brand{font-size:1.3rem}
+  .nav-links a{margin-left:14px;font-size:.9rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">NEUROMENTOR</div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="home.html">Tests</a>
+    <a href="KnowMore.html">Know more</a>
+    <a href="login.html">Login</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- HERO -->
+<section class="console hero">
+  <div class="hero-grid">
+    <div>
+      <h1>STUDENT LEARNING CONSOLE</h1>
+      <p>
+        NeuroMentor is a structured academic console for ICSE / CBSE and
+        competitive preparation.  
+        It focuses on reasoning accuracy, diagrams, LaTeX-based explanations
+        and measurable concept stability.
+      </p>
+      <a class="btn" href="home.html">Take Test</a>
+      <a class="btn" href="KnowMore.html">Know More</a>
+      <a class="btn" href="doubt.html">AI Doubt Solver</a>
+    </div>
+    <div class="hero-visual">
+      <img src="desk1.png" alt="NeuroMentor AI">
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="console">
+  <h2 class="section-title">Core Modules</h2>
+  <div class="grid">
+    <div class="card"><h3>AI Question Solver</h3><p>Step-wise solutions with LaTeX and diagrams.</p></div>
+    <div class="card"><h3>Adaptive Test Engine</h3><p>Difficulty adapts using real performance data.</p></div>
+    <div class="card"><h3>Chapter Heatmaps</h3><p>Weak-area clustering and targeted revision.</p></div>
+    <div class="card"><h3>Exam Simulation</h3><p>ICSE, CBSE and Olympiad patterns.</p></div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="console">
+  <h2 class="section-title">Why NeuroMentor</h2>
+  <p style="max-width:760px;color:#4b5563;font-size:1.05rem">
+    Traditional platforms only track marks. NeuroMentor tracks reasoning accuracy, time behaviour and concept decay,
+    allowing real learning paths instead of random practice.
+  </p>
+</section>
+
+<!-- WORKFLOW -->
+<section class="console">
+  <h2 class="section-title">Learning Flow</h2>
+  <div class="grid">
+    <div class="card"><h3>Diagnose</h3><p>Initial short tests build concept profile.</p></div>
+    <div class="card"><h3>Adapt</h3><p>Difficulty automatically shifts.</p></div>
+    <div class="card"><h3>Reinforce</h3><p>Weak topics scheduled again.</p></div>
+    <div class="card"><h3>Analyse</h3><p>Detailed performance dashboards.</p></div>
+  </div>
+</section>
+<!-- ABOUT -->
+<section class="console">
+  <div class="hero-grid">
+    <div>
+      <h2 class="section-title">About Platform</h2>
+      <p style="color:#4b5563;max-width:650px;font-size:1.05rem">
+        NeuroMentor is designed as a serious academic console, not a casual chatbot.  
+        It supports diagram rendering, structured explanations and exam-aligned practice flows.
+      </p>
+    </div>
+    <div class="about-visual">
+      <img src="book1.png" alt="AI education illustration">
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="console" style="background:#f9fafb;border:none;box-shadow:none">
+  <h2 class="section-title">Contact</h2>
+  <form style="max-width:480px;display:flex;flex-direction:column;gap:16px">
+    
+    <label style="font-size:.9rem;color:#374151;font-weight:600">Name</label>
+    <input style="padding:12px;border:1px solid #ddd;border-radius:8px;font-size:.95rem;transition:border 0.3s" placeholder="Your full name">
+
+    <label style="font-size:.9rem;color:#374151;font-weight:600">Email</label>
+    <input style="padding:12px;border:1px solid #ddd;border-radius:8px;font-size:.95rem;transition:border 0.3s" placeholder="you@example.com">
+
+    <label style="font-size:.9rem;color:#374151;font-weight:600">Message</label>
+    <textarea style="padding:12px;border:1px solid #ddd;border-radius:8px;font-size:.95rem;height:120px;transition:border 0.3s" placeholder="Write your message..."></textarea>
+
+    <button class="btn" type="submit" style="align-self:flex-start">Send Message</button>
+  </form>
+</section>
+
+<footer>
+  © 2026 NeuroMentor – Student Learning Console
+</footer>
+
+</main>
+</body>
+</html>

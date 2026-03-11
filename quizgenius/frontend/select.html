@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<meta charset="UTF-8">
+<title>NeuroMentor – Test Setup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ---- your original CSS (unchanged) ---- */
+:root{
+  --bg:#06090f;
+  --panel:#0b111c;
+  --lime:#00ffd1;
+  --amber:#ff006e;
+  --purple:#8338ec;
+  --txt:#eaf1ff;
+  --glow-cyan:rgba(0,255,209,0.8);
+  --glow-pink:rgba(255,0,110,0.8);
+  --glow-purple:rgba(131,56,236,0.8);
+}
+
+*{box-sizing:border-box;font-family:'Courier New',monospace}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(1200px at 50% 50%, rgba(131,56,236,.15), transparent 40%),
+    radial-gradient(800px at 20% 80%, rgba(255,0,110,.1), transparent 40%),
+    radial-gradient(800px at 80% 20%, rgba(0,255,209,.1), transparent 40%),
+    var(--bg);
+  color:var(--txt);
+  overflow-x:hidden;
+  position:relative;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,.03),
+      rgba(0,0,0,.03) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  pointer-events:none;
+  z-index:1;
+  animation:flicker 0.15s infinite;
+}
+
+nav{
+  padding:16px 5%;
+  background:#06090fcc;
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(0,255,209,.25);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:relative;
+  z-index:10;
+}
+
+.brand{
+  font-weight:700;
+  letter-spacing:.2em;
+  color:var(--lime);
+  font-size:.9rem;
+  position:relative;
+  text-shadow:0 0 10px var(--glow-cyan),0 0 20px var(--glow-cyan);
+}
+
+.brand::before,
+.brand::after{
+  content:attr(data-text);
+  position:absolute;
+  left:0;top:0;
+  opacity:.8;
+  font-weight:700;
+}
+
+.brand::before{
+  color:var(--amber);
+  transform:translate(2px,0);
+  animation:gl1 3s infinite linear alternate;
+  text-shadow:0 0 10px var(--glow-pink),0 0 20px var(--glow-pink);
+}
+
+.brand::after{
+  color:var(--purple);
+  transform:translate(-2px,0);
+  animation:gl2 3.5s infinite linear alternate;
+  text-shadow:0 0 10px var(--glow-purple),0 0 20px var(--glow-purple);
+}
+
+@keyframes gl1{
+  0%{clip-path:inset(20% 0 60% 0)}
+  50%{clip-path:inset(35% 0 30% 0)}
+  100%{clip-path:inset(60% 0 20% 0)}
+}
+
+@keyframes gl2{
+  0%{clip-path:inset(50% 0 20% 0)}
+  50%{clip-path:inset(25% 0 45% 0)}
+  100%{clip-path:inset(35% 0 40% 0)}
+}
+
+.wrapper{
+  padding:60px 5%;
+  display:flex;
+  justify-content:center;
+  position:relative;
+  z-index:2;
+}
+
+.console{
+  position:relative;
+  width:100%;
+  max-width:920px;
+  padding:40px 44px;
+  background:var(--panel);
+  clip-path:polygon(0 0,96% 0,100% 10%,100% 100%,4% 100%,0 90%);
+  border:1px solid rgba(0,255,209,.25);
+  box-shadow:
+    0 50px 120px rgba(0,0,0,.9),
+    0 0 60px rgba(0,255,209,.12);
+  overflow:hidden;
+}
+
+.console::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  clip-path:inherit;
+  background:linear-gradient(90deg,transparent,var(--lime),var(--amber),var(--purple),transparent);
+  filter:blur(18px);
+  opacity:.35;
+  animation:edge 6s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes flicker{
+  0%{opacity:0.95}
+  50%{opacity:1}
+  100%{opacity:0.95}
+}
+
+/* ---------- rain ---------- */
+
+.neon-lines{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+.neon-lines span{
+  position:absolute;
+  width:1px;height:100%;
+  background:linear-gradient(to bottom,transparent,var(--glow-cyan),transparent);
+  animation:fall 8s linear infinite;
+  filter:drop-shadow(0 0 15px var(--glow-cyan)) drop-shadow(0 0 30px rgba(0,255,209,.3));
+  opacity:0.6;
+}
+@keyframes fall{
+  0%{transform:translateY(-100%);opacity:0}
+  10%{opacity:0.8}
+  90%{opacity:0.8}
+  100%{transform:translateY(100%);opacity:0}
+}
+.neon-lines span:nth-child(1){left:5%;animation-duration:7s}
+.neon-lines span:nth-child(2){left:25%;animation-delay:1.5s;filter:drop-shadow(0 0 15px var(--glow-pink)) drop-shadow(0 0 30px rgba(255,0,110,.3))}
+.neon-lines span:nth-child(3){left:50%;animation-delay:2s}
+.neon-lines span:nth-child(4){left:75%;animation-delay:1s;animation-duration:9s;filter:drop-shadow(0 0 15px var(--glow-purple)) drop-shadow(0 0 30px rgba(131,56,236,.3))}
+.neon-lines span:nth-child(5){left:95%;animation-delay:0.5s}
+
+.scan{
+  position:absolute;
+  left:-40%;
+  top:0;
+  width:40%;
+  height:100%;
+  background:linear-gradient(90deg,transparent,rgba(0,255,209,.12),transparent);
+  animation:scan 5.5s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes scan{
+  from{left:-40%}
+  to{left:120%}
+}
+
+@keyframes edge{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:26px;
+}
+
+.header h2{
+  margin:0;
+  font-size:1.4rem;
+  letter-spacing:.08em;
+  color:var(--lime);
+  text-shadow:0 0 10px var(--glow-cyan),0 0 20px var(--glow-cyan);
+}
+
+.badge{
+  font-size:.7rem;
+  color:#00110f;
+  background:var(--lime);
+  padding:4px 8px;
+  font-weight:700;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px 22px;
+}
+
+.group{
+  background:#0f1626;
+  padding:16px 18px;
+  border-left:2px solid var(--lime);
+  transition:box-shadow 0.3s;
+}
+
+.group:hover{
+  box-shadow:0 0 15px rgba(0,255,209,.2);
+}
+
+.group.full{
+  grid-column:1/-1;
+}
+
+.group label{
+  display:block;
+  font-size:.75rem;
+  letter-spacing:.15em;
+  color:#9fded5;
+  margin-bottom:6px;
+}
+
+select,input{
+  width:100%;
+  background:#060b14;
+  border:1px solid rgba(0,255,209,.35);
+  color:white;
+  padding:9px 10px;
+  outline:none;
+  transition:border-color 0.3s, box-shadow 0.3s;
+}
+
+select:focus,input:focus{
+  border-color:var(--amber);
+  box-shadow:0 0 10px rgba(255,0,110,.3);
+}
+
+.subjects{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:10px;
+  margin-top:6px;
+}
+
+.sub{
+  padding:10px;
+  background:#060b14;
+  border:1px solid rgba(0,255,209,.3);
+  cursor:pointer;
+  text-align:center;
+  font-size:.85rem;
+  transition:.2s, box-shadow 0.3s;
+}
+
+.sub.active{
+  background:var(--lime);
+  color:#00110f;
+  font-weight:700;
+}
+
+.sub:hover{
+  box-shadow:0 0 10px rgba(0,255,209,.3);
+}
+
+.radio-row{
+  display:flex;
+  gap:14px;
+  margin-top:6px;
+}
+
+.radio{
+  flex:1;
+  padding:12px;
+  text-align:center;
+  background:#060b14;
+  border:1px solid rgba(0,255,209,.3);
+  cursor:pointer;
+  font-size:.85rem;
+  transition:.2s, box-shadow 0.3s;
+}
+
+.radio.active{
+  background:var(--amber);
+  color:#00110f;
+  font-weight:700;
+}
+
+.radio:hover{
+  box-shadow:0 0 10px rgba(255,0,110,.3);
+}
+
+.footer{
+  margin-top:28px;
+  display:flex;
+  justify-content:flex-end;
+}
+
+.btn{
+  padding:12px 26px;
+  background:var(--lime);
+  border:none;
+  color:#00110f;
+  font-weight:800;
+  cursor:pointer;
+  letter-spacing:.05em;
+  transition:box-shadow 0.3s, background 0.3s;
+  box-shadow:0 0 15px rgba(0,255,209,.5);
+}
+
+.btn:hover{
+  background:var(--amber);
+  box-shadow:0 0 25px var(--glow-pink);
+}
+
+@media(max-width:760px){
+  .form-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="neon-lines">
+  <span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<nav>
+  <div class="brand" data-text="NEUROMENTOR">NEUROMENTOR</div>
+  <div id="boardTag" style="color:#9debe0;font-size:.8rem;text-shadow:0 0 5px rgba(0,255,209,.5)">ICSE BOARD</div>
+</nav>
+
+<div class="wrapper">
+<div class="console">
+<div class="scan"></div>
+
+<div class="header">
+  <h2 id="pageTitle">ICSE Test Configuration</h2>
+  <div class="badge">BOARD MODE</div>
+</div>
+
+<div class="form-grid">
+
+<!-- Board -->
+<div class="group">
+  <label>BOARD</label>
+  <select id="board">
+    <option value="ICSE">ICSE</option>
+    <option value="CBSE">CBSE</option>
+    <option value="JEE">JEE</option>
+    <option value="NEET">NEET</option>
+  </select>
+</div>
+
+<div class="group">
+  <label>GRADE</label>
+  <select id="grade">
+    <option selected>Class 9</option>
+    <option>Class 10</option>
+    <option>Class 11</option>
+    <option>Class 12</option>
+  </select>
+</div>
+
+<div class="group">
+  <label>DIFFICULTY</label>
+  <select id="difficulty">
+    <option>Easy</option>
+    <option selected>Moderate</option>
+    <option>Hard</option>
+  </select>
+</div>
+
+<div class="group">
+  <label>No. Of Questions </label>
+<input type="number" id="questionCount" value="10" min="1" max="100">
+</div>
+
+<div class="group">
+<label>TEST DURATION (Auto)</label>
+<input id="time" readonly value="20 minutes">
+</div>
+
+<div class="group">
+  <label>PAPER PATTERN</label>
+  <div class="radio-row">
+    <div class="radio active" data-pattern="custom">Custom</div>
+    <div class="radio" data-pattern="board">Board Pattern</div>
+  </div>
+</div>
+
+<div class="group full">
+  <label>SUBJECT / STREAM</label>
+  <div class="subjects" id="subjects"></div>
+</div>
+
+<div class="group full">
+  <label>CHAPTERS</label>
+  <div class="subjects" id="chapters"></div>
+</div>
+
+</div>
+
+<div class="footer">
+  <button class="btn" onclick="startTest()">START TEST</button>
+</div>
+
+</div>
+</div>
+
+<script>
+const subjectBox = document.getElementById("subjects");
+const chapterBox = document.getElementById("chapters");
+const boardSelect = document.getElementById("board");
+
+const pageTitle = document.getElementById("pageTitle");
+const boardTag  = document.getElementById("boardTag");
+
+/* ---------------- DATA ---------------- */
+
+const data = {
+  ICSE:{
+    
+  "Class 9":{
+  subjects: {
+    Physics: [
+      "M&E (Units)",
+      "M&E (Vernier Callipers)",
+      "M&E (Screw Gauge)",
+      "M&E (Pendulum)",
+      "Motion in One Dimension",
+      "Laws of Motion",
+      "Pressure in Fluids and Atmospheric Pressure",
+      "Upthrust in Fluids, Archimedes’ Principle and Floatation",
+      "Heat and Energy",
+      "Reflection of Light",
+      "Propagation of Sound Waves",
+      "Current Electricity",
+      "Magnetism"
+    ],
+  
+     Chemistry: [
+      "The Language of Chemistry",
+      "Chemical Changes and Reactions",
+      "Water",
+      "Atomic Structure and Chemical Bonding",
+      "The Periodic Table",
+      "Study of the First Element – Hydrogen",
+      "Study of Gas Laws",
+      "Atmospheric Pollution"
+    ],
+       Biology: [
+      "Introducing Biology",
+      "Cell: The Unit of Life",
+      "Tissues: Plant and Animal Tissues",
+      "The Flower",
+      "Pollination and Fertilization",
+      "Seeds - Structure and Germination",
+      "Respiration in Plants",
+      "Five Kingdom Classification",
+      "Economic Importance of Bacteria",
+      "Economic Importance of Fungi",
+      "Nutrition [Nutrition in General]",
+      "Digestive System",
+      "Skeleton - Movement and Locomotion",
+      "Skin - \"The Jack of All Trades\"",
+      "The Respiratory System",
+      "Hygiene - [A Key to Healthy Life]",
+      "Diseases: Cause and Control",
+      "Aids to Health",
+      "Health Organisations",
+      "Waste Generation and Management"
+    ],
+      Mathematics: [
+      "Rational and Irrational Numbers",
+      "Compound Interest (Stage 1) [Basic Concepts]",
+      "Compound Interest (Stage 2) [Applications]",
+      "Expansions",
+      "Factorisation",
+      "Simultaneous (Linear) Equations [Including Problems]",
+      "Indices [Exponents]",
+      "Logarithms",
+      "Triangles [Congruency in Triangles]",
+      "Isosceles Triangles [Including Inequalities]",
+      "Mid-point Theorem and Its Converse [Including Intercept Theorem]",
+      "Pythagoras Theorem [Proof and Simple Applications with Converse]",
+      "Rectilinear Figures [Quadrilaterals: Parallelogram, Rectangle, Rhombus, Square and Trapezium]",
+      "Construction of Polygons [Using Ruler and Compass Only]",
+      "Area Theorems [Proof and Use]",
+      "Circle",
+      "Statistics",
+      "Mean and Median [For Ungrouped Data Only]",
+      "Area and Perimeter of Plane Figures",
+      "Solids [Surface Area and Volume of 3-D Solids]",
+      "Trigonometrical Ratios [Sine, Cosine, Tangent of an Angle and their Reciprocals]",
+      "Solution of Right Triangles [Simple 2-D Problems Involving One Right-angled Triangle]",
+      "Co-ordinate Geometry",
+      "Graphical Solution [Solutions of Simultaneous Linear Equations, Graphically]",
+      "Distance Formula"
+    ],
+      Geography: [
+      "Earth as a Planet",
+      "Geographic Grid: Latitudes and Longitudes",
+      "Rotation and Revolution",
+      "Earth’s Structure",
+      "Landforms of the Earth",
+      "Rocks",
+      "Volcanoes",
+      "Earthquakes",
+      "Weathering",
+      "Denudation",
+      "Hydrosphere",
+      "Composition and Structure of the Atmosphere",
+      "Insolation",
+      "Atmospheric Pressure and Winds",
+      "Humidity",
+      "Pollution",
+      "Sources of Pollution",
+      "Effects of Pollution",
+      "Preventive Measures",
+      "Natural Regions of the World"
+    ],
+      "History & Civics": [
+      "The Harappan Civilisation",
+      "The Vedic Period",
+      "Jainism and Buddhism",
+      "The Mauryan Empire",
+      "The Sangam Age",
+      "The Age of the Guptas",
+      "Medieval India – (A) The Cholas",
+      "Medieval India – (B) The Delhi Sultanate",
+      "Medieval India – (C) The Mughal Empire",
+      "Medieval India – (D) Composite Culture",
+      "The Modern Age in Europe – (A) Renaissance",
+      "The Modern Age in Europe – (B) Reformation",
+      "The Modern Age in Europe – (C) Industrial Revolution",
+      "Our Constitution",
+      "Salient Features of the Constitution – I",
+      "Salient Features of the Constitution – II",
+      "Elections",
+      "The State Legislatures"
+    ],
+      "Computer Application": [
+      "Principles of Object Oriented Programming",
+      "Introduction to Java",
+      "Elementary Concept of Objects and Classes",
+      "Values and Data Types",
+      "Operators in Java",
+      "Input in Java",
+      "Mathematical Library Methods",
+      "Conditional Statements in Java",
+      "Iterative Constructs in Java",
+      "Nested for Loops",
+      "More on Basic Input / Output",
+      "Computing and Ethics"
+    ],
+    }
+  },
+  
+
+"Class 10":{
+subjects:{
+  Physics: [
+"Force",
+"Work, Energy and Power",
+"Machines",
+"Refraction of Light at Plane Surfaces",
+"Refraction Through a Lens",
+"Spectrum",
+"Sound",
+"Current Electricity",
+"Household Circuits",
+"Electro-magnetism",
+"Calorimetry",
+"Radioactivity"
+],
+
+Chemistry: [
+"Periodic Table, Periodic Properties and Variations",
+"Chemical Bonding",
+"Acids, Bases and Salts",
+"Analytical Chemistry",
+"Mole Concept and Stoichiometry",
+"Electrolysis",
+"Metallurgy",
+"Study of Compounds – Hydrogen Chloride",
+"Study of Compounds – Ammonia",
+"Study of Compounds – Nitric Acid",
+"Study of Compounds – Sulphuric Acid",
+"Organic Chemistry",
+],
+
+Biology: [
+"Cell – The Structural and Functional Unit of Life",
+"Structure of Chromosomes, Cell Cycle and Cell Division",
+"Genetics – Some Basic Fundamentals",
+"Absorption by Roots – The Process Involved",
+"Transpiration",
+"Photosynthesis",
+"Chemical Coordination in Plants",
+"The Circulatory System",
+"The Excretory System",
+"The Nervous System",
+"Sense Organs",
+"The Endocrine System",
+"The Reproductive System",
+"Human Evolution",
+"Population – The Increasing Numbers and Rising Problems",
+"Pollution – A Rising Environmental Problem"
+],
+
+Mathematics: [
+"GST [Goods and Services Tax]",
+"Banking (Recurring Deposit Accounts)",
+"Shares and Dividends",
+"Linear Inequations (In one variable)",
+"Quadratic Equations",
+"Solving Problems Based on Quadratic Equations",
+"Ratio and Proportion",
+"Factorisation of Polynomials (Remainder and Factor Theorems)",
+"Matrices",
+"Arithmetic Progression",
+"Geometric Progression",
+"Reflection",
+"Section and Mid-Point Formula",
+"Equation of a Line",
+"Similarity",
+"Loci (Locus and Its Constructions)",
+"Circles",
+"Tangents and Intersecting Chords",
+"Constructions (Circles)",
+"Cylinder, Cone and Sphere (Surface Area and Volume)",
+"Trigonometric Identities",
+"Heights and Distances",
+"Graphical Representation (Histograms and Ogives)",
+"Measures of Central Tendency (Mean, Median, Quartiles and Mode)",
+"Probability"
+],
+  
+
+  }
+},
+  },
+
+  CBSE:{
+    subjects:{
+      Physics:["Motion","Laws of Motion","Gravitation"],
+      Chemistry:["Structure of Atom","Chemical Reactions"],
+      Biology:["Life Processes","Control and Coordination"],
+      Mathematics:["Polynomials","Triangles","Trigonometry"],
+      Geography:["Resources","Agriculture"],
+      History:["Nationalism in India"],
+      "Computer Applications":["Functions","Lists","File Handling"]
+    }
+  },
+
+  JEE:{
+    streams:{
+      PCM:["Physics","Chemistry","Mathematics"],
+      PCMB:["Physics","Chemistry","Mathematics","Biology"]
+    },
+    chapters:{
+      Physics:["Kinematics","NLM","Work Power Energy"],
+      Chemistry:["Mole Concept","Thermodynamics"],
+      Mathematics:["Vectors","3D Geometry","Limits"],
+      Biology:["Plant Physiology","Human Physiology"]
+    }
+  },
+
+  NEET:{
+    streams:{
+      PCM:["Physics","Chemistry","Mathematics"],
+      PCMB:["Physics","Chemistry","Mathematics","Biology"]
+    },
+    chapters:{
+      Physics:["Units & Dimensions","Mechanics"],
+      Chemistry:["Organic Basics","Biomolecules"],
+      Biology:["Cell Cycle","Genetics","Ecology"]
+    }
+  }
+};
+
+/* ---------------- UI logic ---------------- */
+
+document.getElementById("grade").onchange = rebuild;
+
+rebuild();
+function rebuild(){
+
+const board = boardSelect.value
+const grade = document.getElementById("grade").value.trim()
+
+pageTitle.textContent = board+" "+grade+" Test Configuration"
+boardTag.textContent  = board+" BOARD"
+
+subjectBox.innerHTML=""
+chapterBox.innerHTML=""
+
+if(board==="ICSE" || board==="CBSE"){
+
+const subjects = data?.[board]?.[grade]?.subjects
+
+if(!subjects){
+console.log("Subjects not found for", board, grade)
+return
+}
+
+Object.keys(subjects).forEach(s=>{
+addSubject(s,false)
+})
+
+}else{
+
+addSubject("PCM",true)
+addSubject("PCMB",true)
+
+}
+
+}
+function addSubject(name,isStream){
+
+  const d=document.createElement("div");
+  d.className="sub";
+  d.textContent=name;
+
+  d.onclick=()=>{
+
+    document.querySelectorAll("#subjects .sub").forEach(x=>x.classList.remove("active"));
+    d.classList.add("active");
+
+    loadChapters(name,isStream);
+
+  };
+
+  subjectBox.appendChild(d);
+}
+
+function loadChapters(subject,isStream){
+
+chapterBox.innerHTML=""
+
+const board = boardSelect.value
+const grade = document.getElementById("grade").value.trim()
+
+let chapters=[]
+
+if(board==="ICSE" || board==="CBSE"){
+
+chapters = data?.[board]?.[grade]?.subjects?.[subject] || []
+
+}else{
+
+const streamSubs = data[board].streams[subject]
+
+streamSubs.forEach(sub=>{
+chapters.push(...(data[board].chapters[sub]||[]))
+})
+
+}
+
+chapters.forEach(c=>{
+const d=document.createElement("div")
+d.className="sub"
+d.textContent=c
+d.onclick=()=>d.classList.toggle("active")
+chapterBox.appendChild(d)
+})
+
+}
+/* radio */
+
+document.querySelectorAll(".radio").forEach(r=>{
+  r.onclick=()=>{
+    document.querySelectorAll(".radio").forEach(x=>x.classList.remove("active"));
+    r.classList.add("active");
+  };
+});
+
+
+async function startTest(){
+
+const board = document.getElementById("board").value
+const grade = document.getElementById("grade").value
+const difficulty = document.getElementById("difficulty").value
+const questionCount = document.getElementById("questionCount").value
+
+const subject = document.querySelector("#subjects .sub.active")?.innerText
+
+const chapters = [...document.querySelectorAll("#chapters .sub.active")]
+.map(c => c.innerText)
+
+const duration = parseInt(questionCount) * 2
+
+const payload = {
+board,
+className: grade,
+subject,
+chapters,
+difficulty,
+count: questionCount,
+duration
+}
+sessionStorage.setItem("testDuration", duration)
+
+const res = await fetch("http://127.0.0.1:5000/generate-mcq",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify(payload)
+})
+
+const data = await res.json()
+
+console.log("MCQ response:",data)
+
+sessionStorage.setItem("mcqQuestions", JSON.stringify(data.questions))
+
+window.location.href = "test.html"
+
+}
+const questionCountSelect = document.getElementById("questionCount")
+const timeInput = document.getElementById("time")
+
+function updateTime(){
+
+const q = parseInt(questionCountSelect.value)
+
+const minutes = q * 2
+
+timeInput.value = minutes + " minutes"
+
+}
+
+questionCountSelect.addEventListener("change", updateTime)
+
+updateTime()
+</script>
+
+</body>
+</html>
